@@ -1,16 +1,16 @@
 {
   "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
-  "version": "1.0.0",
-  "description": "A short description about what your plugin does.",
+  "displayName": "SmartHomeRonny",
+  "name": "homebridge-raspberrypi-gpio",
+  "version": "0.0.1",
+  "description": "Control smart home accessories by raspberry pi GPIO.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git://github.com/ronny-antoon/HomeBridge-RaspberryPi-GPIO.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/ronny-antoon/HomeBridge-RaspberryPi-GPIO/issues"
   },
   "engines": {
     "node": ">=12.13.0",
@@ -24,7 +24,17 @@
     "prepublishOnly": "npm run lint && npm run build"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "raspberrypi",
+    "raspberry",
+    "pi",
+    "GPIO",
+    "button",
+    "binds",
+    "light",
+    "lights",
+    "bulbs",
+    "ronny"
   ],
   "dependencies": {},
   "devDependencies": {
