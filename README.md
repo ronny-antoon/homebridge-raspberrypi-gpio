@@ -49,7 +49,7 @@ When you are ready to publish the plugin you should set `private` to false, or r
 
 ## Update Plugin Defaults
 
-Open the [`src/settings.ts`](./src/settings.ts) file and change the default values:
+Open the [`src/settings.ts`](src/configurations/settings.ts) file and change the default values:
 
 * `PLATFORM_NAME` - Set this to be the name of your platform. This is the name of the platform that users will use to register the plugin in the Homebridge `config.json`.
 * `PLUGIN_NAME` - Set this to be the same name you set in the [`package.json`](./package.json) file. 

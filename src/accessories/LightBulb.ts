@@ -1,15 +1,21 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
-import { GenericRPIControllerPlatform } from './platform';
+import { GenericRPIControllerPlatform } from '../platform';
+import {GpioController} from '../controllers/gpioController';
 
 /**
  * Platform Accessory
  * An instance of this class is created for each accessory your platform registers
  * Each accessory may expose multiple services of different service types.
  */
-export class LightBulbAccessory {
+export class LightBulb {
+  // responsible for communicating with home bridge.
   private service: Service;
-  private statusTest: boolean;
+  // input pin on the raspberry pi
+  //private readonly inputPin : number;
+  // output pin on the raspberry pi
+  private readonly outputPin: number;
+  private gpioController: GpioController;
   /**
    * These are just used to create a working example
    * You should implement your own code to track the state of your accessory
@@ -22,8 +28,14 @@ export class LightBulbAccessory {
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
+   // private readonly _inputPin: number, // TODO: could be null
+    private _outputPin: number,
   ) {
-    this.statusTest = false;
+    this.gpioController = GpioController.Instance(platform.log);
+    //this.inputPin = _inputPin;
+    this.outputPin = _outputPin;
+  //  this.gpioController.initGPIO(this.inputPin, 'in');
+    this.gpioController.initGPIO(this.outputPin, 'out');
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer-Ronny')
@@ -56,8 +68,8 @@ export class LightBulbAccessory {
      * can use the same sub type id.)
      */
 
-      //TODO: add listener to input for trigger light "inputPin"
 
+    //this.gpioController.startWatch(this.inputPin);
   }
 
   /**
@@ -66,13 +78,12 @@ export class LightBulbAccessory {
    */
   async triggerLight(value: CharacteristicValue) {
     // implement your own code to turn your device on/off
-    const currentStatus = (await this.getStatus()) as boolean;
-    const newStatus = !currentStatus;
+    const currentStatus = await this.getStatus();
+    const newStatus = currentStatus === 0? 1: 0;
     this.platform.log.info('Set Characteristic On value: ->', value);
     this.platform.log.info('Set Characteristic On currentStatus: ->', currentStatus);
     this.platform.log.info('Set Characteristic On newStatus: ->', newStatus);
-    //TODO: write change output voltage
-    this.statusTest = newStatus;
+    await this.gpioController.setState(this._outputPin);
   }
 
   /**
@@ -90,7 +101,7 @@ export class LightBulbAccessory {
    */
   async getStatus(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    const isOn = this.statusTest; //TODO: read from outpot pin
+    const isOn = await this.gpioController.getState(this.outputPin);
 
     this.platform.log.info('Get Characteristic On ->', isOn);
 

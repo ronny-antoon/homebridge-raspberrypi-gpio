@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import {LightBulbAccessory} from './lightBulbAccessory';
+import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
+import {LightBulb} from './accessories/LightBulb';
 
 /**
  * HomebridgePlatform
@@ -58,8 +58,8 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         type: 'lightBulb',
         uniqueId: 'ABCD',
         displayName: 'Bedroom Light',
-        inputPin: '1',
-        outputPin: '2',
+        inputPin: 8,
+        outputPin: 7,
         initState: 'High',
       },
     ];
@@ -86,7 +86,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new LightBulbAccessory(this, existingAccessory);
+        new LightBulb(this, existingAccessory, device.inputPin, device.outputPin);
 
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
         // remove platform accessories when no longer present
@@ -106,7 +106,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
         // marwan switch case according to accessory type
-        new LightBulbAccessory(this, accessory);
+        new LightBulb(this, accessory, device.inputPin, device.outputPin);
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
