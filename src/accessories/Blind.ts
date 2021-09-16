@@ -13,10 +13,11 @@ export class Blind{
   private readonly buttonUpPin: number;
   private readonly buttonDownPin: number;
   // parameters
-  private readonly timerToOpen: number; // seconds
-  private readonly timerToClose: number;// seconds
+  private readonly timeToOpen: number; // seconds
+  private readonly timeToClose: number;// seconds
   private targetPercentage: number;     // where to goes
-  private openPercentage: number;       // 0 full close, 100 full open
+  private currentPercentage: number;       // 0 full close, 100 full open
+  private intervalMoving?: ReturnType<typeof setInterval>;
   // constructor getting platform and accessory
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
@@ -34,10 +35,10 @@ export class Blind{
     this.motorDownPin = accessory.context.device.motorDownPin;
     this.buttonUpPin = accessory.context.device.buttonUpPin;
     this.buttonDownPin = accessory.context.device.buttonDownPin;
-    this.timerToOpen = accessory.context.device.timerToOpen || 13;
-    this.timerToClose = accessory.context.device.timerToClose || 13;
+    this.timeToOpen = accessory.context.device.timeToOpen || 13;
+    this.timeToClose = accessory.context.device.timeToClose || 13;
     this.targetPercentage = 0;
-    this.openPercentage = 100;
+    this.currentPercentage = 100;
     // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(
@@ -65,7 +66,7 @@ export class Blind{
    */
   handleCurrentPositionGet() {
     this.platform.log.debug('Triggered GET CurrentPosition');
-    return this.openPercentage;
+    return this.currentPercentage;
   }
 
 
@@ -100,14 +101,41 @@ export class Blind{
   /**
    * Handle requests to set the "Target Position" characteristic
    */
-  handleTargetPositionSet(value) {
-    this.platform.log.debug('Triggered SET TargetPosition:' + value);
-    this.targetPercentage = value;
+  handleTargetPositionSet(target) {
+    this.platform.log.debug('Triggered SET TargetPosition:' + target);
+    if(this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
+      // TODO: shutdown gpio motor
+      clearInterval(this.intervalMoving!);
+    }
+    this.targetPercentage = target;
     this.moveBlind();
   }
 
-  // move blinds to the correct postion
+  // move blinds to the correct position
   private moveBlind(){
-
+    let timer: number;
+    const intervalTime = 50;
+    // check directions and turn on
+    if(this.handlePositionStateGet() === this.platform.Characteristic.PositionState.INCREASING){
+      // TODO: turn on Up motor
+      timer = this.timeToOpen;
+    }else {
+      if(this.handlePositionStateGet() === this.platform.Characteristic.PositionState.DECREASING){
+        // TODO: turn on DOWN motor
+        timer = this.timeToClose;
+      }else {
+        return;
+      }
+    }
+    // Update position every IntervalTime
+    this.intervalMoving = setInterval(()=>{
+      this.currentPercentage += intervalTime/timer;
+      // check if the blind achieves the target
+      if(this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
+        // stop motor and clear interval
+        // TODO: shutdown gpio motor
+        clearInterval(this.intervalMoving!);
+      }
+    }, intervalTime);
   }
 }

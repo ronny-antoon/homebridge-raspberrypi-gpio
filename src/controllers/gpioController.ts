@@ -66,12 +66,6 @@ export class GpioController {
     const result = this.gpioInUse.find(gpioPin => gpioPin.id === _inputPin);
     if (result) {
       result.gpios.watch(cb);
-      // result.gpios.watch((err) => {
-      //   if (err) {
-      //     throw err;
-      //   }
-      //   this.setState(_outputPin);
-      // });
     } else {
       throw new Error('startWatch didnt run smoothly :  ' + this.gpioInUse);
     }
