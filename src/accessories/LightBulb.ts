@@ -12,7 +12,7 @@ export class LightBulb {
   // responsible for communicating with home bridge.
   private service: Service;
   // input pin on the raspberry pi
-  //private readonly inputPin : number;
+  private readonly inputPin : number;
   // output pin on the raspberry pi
   private readonly outputPin: number;
   private gpioController: GpioController;
@@ -28,13 +28,13 @@ export class LightBulb {
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
-   // private readonly _inputPin: number, // TODO: could be null
+    private readonly _inputPin: number, // TODO: could be null
     private _outputPin: number,
   ) {
     this.gpioController = GpioController.Instance(platform.log);
-    //this.inputPin = _inputPin;
+    this.inputPin = _inputPin;
     this.outputPin = _outputPin;
-  //  this.gpioController.initGPIO(this.inputPin, 'in');
+    this.gpioController.initGPIO(this.inputPin, 'in');
     this.gpioController.initGPIO(this.outputPin, 'out');
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -55,7 +55,7 @@ export class LightBulb {
 
     // register handlers for the On/Off Characteristic
     this.service.getCharacteristic(this.platform.Characteristic.On)
-      .onSet(this.triggerLight.bind(this))                // SET - bind to the `setOn` method below
+      .onSet(this.triggerLight.bind(this))             // SET - bind to the `setOn` method below
       .onGet(this.getStatus.bind(this));               // GET - bind to the `getOn` method below
     /**
      * Creating multiple services of the same type.
@@ -69,7 +69,12 @@ export class LightBulb {
      */
 
 
-    //this.gpioController.startWatch(this.inputPin);
+    this.gpioController.startWatch(this.inputPin, (err) => {
+      if (err) {
+        throw err;
+      }
+      this.gpioController.setState(_outputPin);
+    });
   }
 
   /**

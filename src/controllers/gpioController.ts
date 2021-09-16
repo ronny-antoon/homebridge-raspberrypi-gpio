@@ -46,6 +46,7 @@ export class GpioController {
   }
 
   public setState(pin: number): void {
+    this.logger.info("-----------------------------------------------");
     this.logger.info("setState for loop:");
     for(let i = 0; i < this.gpioInUse.length; i++) {
       this.logger.info("GPIO: " + i + ", id:" + this.gpioInUse[i].id + ", pin: " + this.gpioInUse[i].gpios);
@@ -61,15 +62,16 @@ export class GpioController {
     }
   }
 
-  public async startWatch(_pin: number): Promise<void> {
-    const result = this.gpioInUse.find(gpioPin => gpioPin.id === _pin);
+  public async startWatch(_inputPin: number, cb): Promise<void> {
+    const result = this.gpioInUse.find(gpioPin => gpioPin.id === _inputPin);
     if (result) {
-      result.gpios.watch((err) => {
-        if (err) {
-          throw err;
-        }
-        this.setState(_pin);
-      });
+      result.gpios.watch(cb);
+      // result.gpios.watch((err) => {
+      //   if (err) {
+      //     throw err;
+      //   }
+      //   this.setState(_outputPin);
+      // });
     } else {
       throw new Error('startWatch didnt run smoothly :  ' + this.gpioInUse);
     }
