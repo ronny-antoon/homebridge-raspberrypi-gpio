@@ -3,6 +3,7 @@ import {Logger} from 'homebridge';
 import {DEBOUNCE_TIMEOUT} from '../configurations/constants';
 
 type Direction = 'in' | 'out' | 'high' | 'low';
+type Edge = 'none' | 'rising' | 'falling' | 'both';
 
 export class GpioController {
   private static _instance: GpioController;
@@ -16,11 +17,11 @@ export class GpioController {
     return this._instance || (this._instance = new this(log));
   }
 
-  public initGPIO(_gpio: number, _direction: Direction, _debounceTimeout = DEBOUNCE_TIMEOUT) {
+  public initGPIO(_gpio: number, _direction: Direction, _edge: Edge = 'rising', _debounceTimeout: number = DEBOUNCE_TIMEOUT) {
     if (!(Gpio.accessible)) {
       throw new Error('gpioController error: Gpio not accessible');
     }
-    const newGPIo = new Gpio(_gpio, _direction, 'rising', {debounceTimeout: _debounceTimeout});
+    const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
     if(!newGPIo){
       throw Error('didnt init new gpio correctly');
     }

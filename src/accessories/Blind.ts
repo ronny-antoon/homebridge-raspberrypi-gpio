@@ -63,7 +63,35 @@ export class Blind {
 
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
-    // TODO: Configure raspberry pi controller
+    this.gpioController.initGPIO(this.buttonUpPin, 'in', 'both');
+    this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
+    this.gpioController.initGPIO(this.motorUpPin, 'out');
+    this.gpioController.initGPIO(this.motorDownPin, 'out');
+
+    // Watch button press
+    this.gpioController.startWatch(this.buttonUpPin, (err, value) => {
+      if (err) {
+        throw err;
+      }
+      if (value === 1) {
+        this.handleTargetPositionSet(100);
+      }
+      if (value === 0) {
+        this.handleTargetPositionSet(this.currentPercentage);
+      }
+    });
+
+    this.gpioController.startWatch(this.buttonDownPin, (err, value) => {
+      if (err) {
+        throw err;
+      }
+      if (value === 1) {
+        this.handleTargetPositionSet(0);
+      }
+      if (value === 0) {
+        this.handleTargetPositionSet(this.currentPercentage);
+      }
+    });
 
     // init position and set state
     this.moveBlind();
@@ -112,7 +140,8 @@ export class Blind {
   handleTargetPositionSet(target) {
     //this.platform.log.info('Triggered SET TargetPosition:' + target);
     if (this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
-      // TODO: shutdown gpio motors
+      this.gpioController.setState(this.motorUpPin, 0);
+      this.gpioController.setState(this.motorDownPin, 0);
       clearInterval(this.intervalMoving!);
     }
     this.targetPercentage = target;
@@ -127,12 +156,12 @@ export class Blind {
     let direction = this.platform.Characteristic.PositionState.STOPPED;
     // check directions and turn on
     if (this.handlePositionStateGet() === this.platform.Characteristic.PositionState.INCREASING) {
-      // TODO: turn on Up motor
+      this.gpioController.setState(this.motorUpPin, 1);
       direction = this.platform.Characteristic.PositionState.INCREASING;
       tickerPercentage = (INTERVAL_BLIND / 1000) / this.timeToOpen;
     } else {
       if (this.handlePositionStateGet() === this.platform.Characteristic.PositionState.DECREASING) {
-        // TODO: turn on DOWN motor
+        this.gpioController.setState(this.motorDownPin, 1);
         direction = this.platform.Characteristic.PositionState.DECREASING;
         tickerPercentage = ((INTERVAL_BLIND / 1000) / this.timeToClose) * -1;
       } else {
@@ -154,7 +183,8 @@ export class Blind {
       // check if the blind achieves the target
       if (this.handlePositionStateGet() !== direction) {
         // stop motor and clear interval
-        // TODO: shutdown gpio motor
+        this.gpioController.setState(this.motorUpPin, 0);
+        this.gpioController.setState(this.motorDownPin, 0);
         this.currentPercentage = this.targetPercentage;
         clearInterval(this.intervalMoving!);
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());

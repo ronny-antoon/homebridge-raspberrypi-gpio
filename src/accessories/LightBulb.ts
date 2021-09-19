@@ -58,7 +58,7 @@ export class LightBulb {
     // code to turn device on/off
     const currentStatus = this.getOnState();
     const newStatus = currentStatus === 0 ? 1 : 0;
-    this.gpioController.setState(this.buttonPin, newStatus);
+    this.gpioController.setState(this.lightPin, newStatus);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
   }
 
