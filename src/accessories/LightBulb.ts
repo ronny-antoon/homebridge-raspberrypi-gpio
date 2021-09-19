@@ -18,9 +18,9 @@ export class LightBulb {
   ) {
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer-Ronny')
-      .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model-Ronny')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial-Ronny')
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.Manufacturer || 'Default-Manufacturer-Ronny')
+      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.Model || 'Default-Model-Ronny')
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.SerialNumber || 'Default-Serial-Ronny')
       .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
 
     // Configure Light Controller

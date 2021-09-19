@@ -3,6 +3,7 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
 import {LightBulb} from './accessories/LightBulb';
 import {Blind} from './accessories/Blind';
+import {ConfigParser} from './utils/ConfigParser';
 
 /**
  * HomebridgePlatform
@@ -53,17 +54,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     this.log.info('register device entered');
     // EXAMPLE ONLY
     // A real plugin you would register accessories from a user-defined array in the platform config.
-    const configuredDevicesFromFile = [
-      {
-        type: 'Blindaaa',
-        uniqueId: 'ABCDaaaaa',
-        displayName: 'Bedroom Blindaaa',
-        motorUpPin: 4,
-        motorDownPin: 3,
-        buttonUpPin: 24,
-        buttonDownPin: 23,
-      },
-    ];
+    const configuredDevicesFromFile = ConfigParser();
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of configuredDevicesFromFile) {
@@ -87,7 +78,12 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new Blind(this, existingAccessory);
+        if(device.type === 'WindowCovering') {
+          new Blind(this, existingAccessory);
+        }
+        if(device.type === 'LightBulb') {
+          new LightBulb(this, existingAccessory);
+        }
 
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
         // remove platform accessories when no longer present
@@ -107,7 +103,12 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
         // marwan switch case according to accessory type
-        new Blind(this, accessory);
+        if(device.type === 'WindowCovering') {
+          new Blind(this, accessory);
+        }
+        if(device.type === 'LightBulb') {
+          new LightBulb(this, accessory);
+        }
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);

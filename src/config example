@@ -1,0 +1,137 @@
+{
+    "bridge": {
+        "name": "Homebridge 3333",
+        "username": "0E:47:4D:5E:F4:E8",
+        "port": 51375,
+        "pin": "666-66-666"
+    },
+    "accessories": [
+        {
+            "accessory": "GPIODevice",
+            "name": "W C Light",
+            "type": "Lightbulb",
+            "pin": 13,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "W C light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 19,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Hand Wash Light",
+            "type": "Lightbulb",
+            "pin": 6,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Hand light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 26,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bathroom Light",
+            "type": "Lightbulb",
+            "pin": 5,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bathroom light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 21,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Corodor Light",
+            "type": "Lightbulb",
+            "pin": 22,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Corodor light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 20,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Small Balcoon Light",
+            "type": "Lightbulb",
+            "pin": 27,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Small Balcoon light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 16,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Mamad Light",
+            "type": "Lightbulb",
+            "pin": 17,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Mamad light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 12,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Left Kichen",
+            "type": "WindowCovering",
+            "pins": [
+                3,
+                4
+            ],
+            "pulseDuration": 0,
+            "shiftDuration": 14,
+            "initPosition": 99
+        }
+    ],
+    "platforms": [
+        {
+            "name": "Config",
+            "port": 8581,
+            "platform": "config"
+        }
+    ]
+}
