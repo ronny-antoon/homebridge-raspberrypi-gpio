@@ -1,8 +1,8 @@
 import {PlatformAccessory, Service} from 'homebridge';
 import {GpioController} from '../controllers/gpioController';
 import {GenericRPIControllerPlatform} from '../platform';
+import {INTERVAL_BLIND} from '../configurations/constants';
 
-const intervalTime = 20;
 
 export class Blind {
   // responsible for communicating with home bridge.
@@ -46,7 +46,6 @@ export class Blind {
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(
       this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
-
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/WindowCovering
 
@@ -71,7 +70,7 @@ export class Blind {
    * Handle requests to get the current value of the "Current Position" characteristic 0-100
    */
   handleCurrentPositionGet() {
-    this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
+    //this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
     return this.currentPercentage;
   }
 
@@ -91,7 +90,7 @@ export class Blind {
       state = this.platform.Characteristic.PositionState.DECREASING;
     }
     // stopped
-    this.platform.log.info('Triggered GET PositionState: ' + state);
+    //this.platform.log.info('Triggered GET PositionState: ' + state);
     return state;
   }
 
@@ -100,7 +99,7 @@ export class Blind {
    * Handle requests to get the current value of the "Target Position" characteristic
    */
   handleTargetPositionGet() {
-    this.platform.log.info('Triggered GET TargetPosition: ' + this.targetPercentage);
+    //this.platform.log.info('Triggered GET TargetPosition: ' + this.targetPercentage);
     return this.targetPercentage;
   }
 
@@ -108,12 +107,14 @@ export class Blind {
    * Handle requests to set the "Target Position" characteristic
    */
   handleTargetPositionSet(target) {
-    this.platform.log.info('Triggered SET TargetPosition:' + target);
+    //this.platform.log.info('Triggered SET TargetPosition:' + target);
     if (this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
-      // TODO: shutdown gpio motor
+      // TODO: shutdown gpio motors
       clearInterval(this.intervalMoving!);
     }
     this.targetPercentage = target;
+    this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
+    this.service.getCharacteristic(this.platform.Characteristic.TargetPosition).updateValue(this.handleTargetPositionGet());
     this.moveBlind();
   }
 
@@ -125,13 +126,15 @@ export class Blind {
     if (this.handlePositionStateGet() === this.platform.Characteristic.PositionState.INCREASING) {
       // TODO: turn on Up motor
       direction = this.platform.Characteristic.PositionState.INCREASING;
-      tickerPercentage = (intervalTime / 1000) / this.timeToOpen;
+      tickerPercentage = (INTERVAL_BLIND / 1000) / this.timeToOpen;
     } else {
       if (this.handlePositionStateGet() === this.platform.Characteristic.PositionState.DECREASING) {
         // TODO: turn on DOWN motor
         direction = this.platform.Characteristic.PositionState.DECREASING;
-        tickerPercentage = ((intervalTime / 1000) / this.timeToClose) * -1;
+        tickerPercentage = ((INTERVAL_BLIND / 1000) / this.timeToClose) * -1;
       } else {
+        this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
+        this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
         return;
       }
     }
@@ -154,6 +157,6 @@ export class Blind {
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
         this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
       }
-    }, intervalTime);
+    }, INTERVAL_BLIND);
   }
 }
