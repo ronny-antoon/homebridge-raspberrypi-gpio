@@ -3,92 +3,63 @@ import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 import { GenericRPIControllerPlatform } from '../platform';
 import {GpioController} from '../controllers/gpioController';
 
-/**
- * Platform Accessory
- * An instance of this class is created for each accessory your platform registers
- * Each accessory may expose multiple services of different service types.
- */
 export class LightBulb {
   // responsible for communicating with home bridge.
   private service: Service;
-  // input pin on the raspberry pi
-  private readonly inputPin : number;
-  // output pin on the raspberry pi
-  private readonly outputPin: number;
+  // responsible for communicating with Raspberry Pi GPIO
   private gpioController: GpioController;
-  /**
-   * These are just used to create a working example
-   * You should implement your own code to track the state of your accessory
-   */
-  // private exampleStates = {
-  //   On: false,
-  //   Brightness: 100,
-  // };
+  // GPIO Pins raspberry pi
+  private readonly buttonPin: number;
+  private readonly lightPin: number;
 
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
-    private readonly _inputPin: number, // TODO: could be null
-    private _outputPin: number,
   ) {
-    this.gpioController = GpioController.Instance(platform.log);
-    this.inputPin = _inputPin;
-    this.outputPin = _outputPin;
-    this.gpioController.initGPIO(this.inputPin, 'in');
-    this.gpioController.initGPIO(this.outputPin, 'out');
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Default-Manufacturer-Ronny')
       .setCharacteristic(this.platform.Characteristic.Model, 'Default-Model-Ronny')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial-Ronny');
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, 'Default-Serial-Ronny')
+      .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
+
+    // Configure Light Controller
+    this.buttonPin = accessory.context.device.buttonPin;
+    this.lightPin = accessory.context.device.lightPin;
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
-
-    // set the service name, this is what is displayed as the default name on the Home app
-    // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
-
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/Lightbulb
 
-    // register handlers for the On/Off Characteristic
+    // register handlers for required characteristics
     this.service.getCharacteristic(this.platform.Characteristic.On)
       .onSet(this.triggerLight.bind(this))             // SET - bind to the `setOn` method below
-      .onGet(this.getStatus.bind(this));               // GET - bind to the `getOn` method below
-    /**
-     * Creating multiple services of the same type.
-     *
-     * To avoid "Cannot add a Service with the same UUID another Service without also defining a unique 'subtype' property." error,
-     * when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
-     * this.accessory.getService('NAME') || this.accessory.addService(this.platform.Service.Lightbulb, 'NAME', 'USER_DEFINED_SUBTYPE_ID');
-     *
-     * The USER_DEFINED_SUBTYPE must be unique to the platform accessory (if you platform exposes multiple accessories, each accessory
-     * can use the same sub type id.)
-     */
+      .onGet(this.getOnState.bind(this));               // GET - bind to the `getOn` method below
 
 
-    this.gpioController.startWatch(this.inputPin, (err) => {
+    //Configure raspberry pi controller
+    this.gpioController = GpioController.Instance(platform.log);
+    this.gpioController.initGPIO(this.buttonPin, 'in');
+    this.gpioController.initGPIO(this.lightPin, 'out');
+
+    // Watch button press
+    this.gpioController.startWatch(this.buttonPin, (err) => {
       if (err) {
         throw err;
       }
-      this.gpioController.setState(_outputPin);
+      this.triggerLight();
+      this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
     });
   }
 
-  /**
-   * Handle "SET" requests from HomeKit
-   * These are sent when the user changes the state of an accessory, for example, turning on a Light bulb.
-   */
-  async triggerLight(value: CharacteristicValue) {
-    // implement your own code to turn your device on/off
-    const currentStatus = await this.getStatus();
-    const newStatus = currentStatus === 0? 1: 0;
-    this.platform.log.info('Set Characteristic On value: ->', value);
-    this.platform.log.info('Set Characteristic On currentStatus: ->', currentStatus);
-    this.platform.log.info('Set Characteristic On newStatus: ->', newStatus);
-    await this.gpioController.setState(this._outputPin);
+  triggerLight() {
+    // code to turn device on/off
+    const currentStatus = this.getOnState();
+    const newStatus = currentStatus === 0 ? 1 : 0;
+    this.gpioController.setState(this.buttonPin, newStatus);
+    this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
   }
 
   /**
@@ -104,16 +75,8 @@ export class LightBulb {
    * @example
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
-  async getStatus(): Promise<CharacteristicValue> {
-    // implement your own code to check if the device is on
-    const isOn = await this.gpioController.getState(this.outputPin);
-
-    this.platform.log.info('Get Characteristic On ->', isOn);
-
-    // if you need to return an error to show the device as "Not Responding" in the Home app:
-    // throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
-
-    return isOn;
+  getOnState(): CharacteristicValue {
+    return this.gpioController.getState(this.lightPin);
   }
 
 }

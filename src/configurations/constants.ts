@@ -1,5 +1,7 @@
 // time in ms interval for move blinds
 export const INTERVAL_BLIND = 20;
+// debounceTimeout for input raspberry pi
+export const DEBOUNCE_TIMEOUT = 50;
 
 // output pins in the board   GPIO
 export const OUTPUT_1 = 13;

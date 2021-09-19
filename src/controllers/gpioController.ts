@@ -1,5 +1,6 @@
 import {BinaryValue, Gpio} from 'onoff';
 import {Logger} from 'homebridge';
+import {DEBOUNCE_TIMEOUT} from '../configurations/constants';
 
 type Direction = 'in' | 'out' | 'high' | 'low';
 
@@ -15,7 +16,7 @@ export class GpioController {
     return this._instance || (this._instance = new this(log));
   }
 
-  public initGPIO(_gpio: number, _direction: Direction, _debounceTimeout = 50) {
+  public initGPIO(_gpio: number, _direction: Direction, _debounceTimeout = DEBOUNCE_TIMEOUT) {
     if (!(Gpio.accessible)) {
       throw new Error('gpioController error: Gpio not accessible');
     }
@@ -24,10 +25,6 @@ export class GpioController {
       throw Error('didnt init new gpio correctly');
     }
     this.gpioInUse.push({gpios: newGPIo, id: _gpio});
-    this.logger.info("Init for loop:");
-    for(let i = 0; i < this.gpioInUse.length; i++) {
-      this.logger.info("GPIO: " + i + ", id:" + this.gpioInUse[i].id + ", pin: " + this.gpioInUse[i].gpios);
-    }
   }
 
   public async unexportGpio(): Promise<void> {
@@ -36,30 +33,20 @@ export class GpioController {
     }
   }
 
-  public getState(_pin: number): BinaryValue {
-    const result = this.gpioInUse.find(gpioPin => gpioPin.id === _pin);
+  public getState(pinNumber: number): BinaryValue {
+    const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
       return result.gpios.readSync();
     }
-    //TODO: throw Error
-    return Gpio.LOW;
+    throw Error('didnt find this pin gpio:' + pinNumber);
   }
 
-  public setState(pin: number): void {
-    this.logger.info("-----------------------------------------------");
-    this.logger.info("setState for loop:");
-    for(let i = 0; i < this.gpioInUse.length; i++) {
-      this.logger.info("GPIO: " + i + ", id:" + this.gpioInUse[i].id + ", pin: " + this.gpioInUse[i].gpios);
-    }
-    this.logger.info("looking for: " + pin);
-    const result = this.gpioInUse.find(gpioPin => gpioPin.id === pin);
-    this.logger.info("result ---- : " + result);
+  public setState(pinNumber: number, powerState: BinaryValue): void {
+    const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
-      const pinState = this.getState(pin);
-      result.gpios.writeSync(pinState === Gpio.LOW ? Gpio.HIGH : Gpio.LOW);
-    } else {
-      throw new Error('setStat didnt run smoothly');
+      result.gpios.writeSync(powerState);
     }
+    throw Error('didnt find this pin gpio:' + pinNumber);
   }
 
   public async startWatch(_inputPin: number, cb): Promise<void> {

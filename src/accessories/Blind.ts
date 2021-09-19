@@ -42,6 +42,7 @@ export class Blind {
     this.timeToClose = accessory.context.device.timeToClose || 13;
     this.targetPercentage = 0;
     this.currentPercentage = 100;
+
     // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(
@@ -59,8 +60,10 @@ export class Blind {
     this.service.getCharacteristic(this.platform.Characteristic.TargetPosition)
       .onGet(this.handleTargetPositionGet.bind(this))
       .onSet(this.handleTargetPositionSet.bind(this));
-    //set accessory pins on Controller
+
+    //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
+    // TODO: Configure raspberry pi controller
 
     // init position and set state
     this.moveBlind();
