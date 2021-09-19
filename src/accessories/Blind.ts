@@ -63,10 +63,10 @@ export class Blind {
 
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
-    this.gpioController.initGPIO(this.buttonUpPin, 'in', 'both');
-    this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
     this.gpioController.initGPIO(this.motorUpPin, 'out');
     this.gpioController.initGPIO(this.motorDownPin, 'out');
+    this.gpioController.initGPIO(this.buttonUpPin, 'in', 'both');
+    this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
 
     // Watch button press
     this.gpioController.startWatch(this.buttonUpPin, (err, value) => {

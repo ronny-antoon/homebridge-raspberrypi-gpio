@@ -2,7 +2,7 @@ import {BinaryValue, Gpio} from 'onoff';
 import {Logger} from 'homebridge';
 import {DEBOUNCE_TIMEOUT} from '../configurations/constants';
 
-type Direction = 'in' | 'out' | 'high' | 'low';
+type Direction = 'in' | 'out';
 type Edge = 'none' | 'rising' | 'falling' | 'both';
 
 export class GpioController {
@@ -25,6 +25,9 @@ export class GpioController {
     if(!newGPIo){
       throw Error('didnt init new gpio correctly');
     }
+    if(_direction === 'out'){
+      newGPIo.writeSync(0);
+    }
     this.gpioInUse.push({gpios: newGPIo, id: _gpio});
   }
 
@@ -35,6 +38,7 @@ export class GpioController {
   }
 
   public getState(pinNumber: number): BinaryValue {
+
     const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
       return result.gpios.readSync();
@@ -46,8 +50,9 @@ export class GpioController {
     const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
       result.gpios.writeSync(powerState);
+    }else {
+      throw new Error('didnt find this pin gpio:' + pinNumber);
     }
-    throw Error('didnt find this pin gpio:' + pinNumber);
   }
 
   public async startWatch(_inputPin: number, cb): Promise<void> {
