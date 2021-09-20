@@ -1,14 +1,6 @@
 {
-    "bridge": {
-        "name": "Homebridge 3333",
-        "username": "0E:47:4D:5E:F4:E8",
-        "port": 51375,
-        "pin": "666-66-666"
-    },
-    "accessories": [
-        {
             "accessory": "GPIODevice",
-            "name": "W C Light",
+            "name": "Store Light",
             "type": "Lightbulb",
             "pin": 13,
             "inverted": false,
@@ -16,7 +8,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "W C light button",
+            "name": "store light button",
             "type": "StatelessProgrammableSwitch",
             "pin": 19,
             "inverted": true,
@@ -26,43 +18,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Hand Wash Light",
-            "type": "Lightbulb",
-            "pin": 6,
-            "inverted": false,
-            "initState": 0
-        },
-        {
-            "accessory": "GPIODevice",
-            "name": "Hand light button",
-            "type": "StatelessProgrammableSwitch",
-            "pin": 26,
-            "inverted": true,
-            "shortPress": 40,
-            "postpone": 40,
-            "longPress": 500
-        },
-        {
-            "accessory": "GPIODevice",
-            "name": "Bathroom Light",
-            "type": "Lightbulb",
-            "pin": 5,
-            "inverted": false,
-            "initState": 0
-        },
-        {
-            "accessory": "GPIODevice",
-            "name": "Bathroom light button",
-            "type": "StatelessProgrammableSwitch",
-            "pin": 21,
-            "inverted": true,
-            "shortPress": 40,
-            "postpone": 40,
-            "longPress": 500
-        },
-        {
-            "accessory": "GPIODevice",
-            "name": "Corodor Light",
+            "name": "Wall Light",
             "type": "Lightbulb",
             "pin": 22,
             "inverted": false,
@@ -70,7 +26,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Corodor light button",
+            "name": "Wall light button",
             "type": "StatelessProgrammableSwitch",
             "pin": 20,
             "inverted": true,
@@ -80,7 +36,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Small Balcoon Light",
+            "name": "Center Light",
             "type": "Lightbulb",
             "pin": 27,
             "inverted": false,
@@ -88,7 +44,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Small Balcoon light button",
+            "name": "Center light button",
             "type": "StatelessProgrammableSwitch",
             "pin": 16,
             "inverted": true,
@@ -98,7 +54,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Mamad Light",
+            "name": "Side Light",
             "type": "Lightbulb",
             "pin": 17,
             "inverted": false,
@@ -106,7 +62,7 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Mamad light button",
+            "name": "Side light button",
             "type": "StatelessProgrammableSwitch",
             "pin": 12,
             "inverted": true,
@@ -116,22 +72,49 @@
         },
         {
             "accessory": "GPIODevice",
-            "name": "Left Kichen",
+            "name": "TV Light",
+            "type": "Lightbulb",
+            "pin": 4,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "TV light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 24,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bar Light",
+            "type": "Lightbulb",
+            "pin": 3,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bar light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 23,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Store",
             "type": "WindowCovering",
             "pins": [
-                3,
-                4
+                5,
+                6
             ],
             "pulseDuration": 0,
             "shiftDuration": 14,
             "initPosition": 99
         }
-    ],
-    "platforms": [
-        {
-            "name": "Config",
-            "port": 8581,
-            "platform": "config"
-        }
-    ]
-}

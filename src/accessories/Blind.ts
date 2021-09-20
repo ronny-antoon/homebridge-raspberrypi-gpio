@@ -69,14 +69,18 @@ export class Blind {
     this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
 
     // Watch button press
+    let lasttrig1: number = 0;
+    let lasttrig2: number = 0;
     this.gpioController.startWatch(this.buttonUpPin, (err, value) => {
       if (err) {
         throw err;
       }
       if (value === 1) {
+        lasttrig1 = 1;
         this.handleTargetPositionSet(100);
       }
-      if (value === 0) {
+      if (value === 0 && lasttrig1 === 1) {
+        lasttrig1 = 0;
         this.handleTargetPositionSet(this.currentPercentage);
       }
     });
@@ -86,9 +90,11 @@ export class Blind {
         throw err;
       }
       if (value === 1) {
+        lasttrig2 = 1;
         this.handleTargetPositionSet(0);
       }
-      if (value === 0) {
+      if (value === 0 && lasttrig2 === 1) {
+        lasttrig2 = 0;
         this.handleTargetPositionSet(this.currentPercentage);
       }
     });
@@ -101,7 +107,7 @@ export class Blind {
    * Handle requests to get the current value of the "Current Position" characteristic 0-100
    */
   handleCurrentPositionGet() {
-    //this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
+    this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
     return this.currentPercentage;
   }
 
@@ -121,7 +127,7 @@ export class Blind {
       state = this.platform.Characteristic.PositionState.DECREASING;
     }
     // stopped
-    //this.platform.log.info('Triggered GET PositionState: ' + state);
+    this.platform.log.info('Triggered GET PositionState: ' + state);
     return state;
   }
 
@@ -130,7 +136,7 @@ export class Blind {
    * Handle requests to get the current value of the "Target Position" characteristic
    */
   handleTargetPositionGet() {
-    //this.platform.log.info('Triggered GET TargetPosition: ' + this.targetPercentage);
+    this.platform.log.info('Triggered GET TargetPosition: ' + this.targetPercentage);
     return this.targetPercentage;
   }
 
@@ -138,20 +144,21 @@ export class Blind {
    * Handle requests to set the "Target Position" characteristic
    */
   handleTargetPositionSet(target) {
-    //this.platform.log.info('Triggered SET TargetPosition:' + target);
+    this.platform.log.info('Triggered SET TargetPosition:' + target);
     if (this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
       this.gpioController.setState(this.motorUpPin, 0);
       this.gpioController.setState(this.motorDownPin, 0);
       clearInterval(this.intervalMoving!);
     }
     this.targetPercentage = target;
-    this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
     this.service.getCharacteristic(this.platform.Characteristic.TargetPosition).updateValue(this.handleTargetPositionGet());
+    this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
     this.moveBlind();
   }
 
   // move blinds to the correct position
   private moveBlind() {
+    this.platform.log.info('Triggered moveBlind:');
     let tickerPercentage: number;
     let direction = this.platform.Characteristic.PositionState.STOPPED;
     // check directions and turn on
