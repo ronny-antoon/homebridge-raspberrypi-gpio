@@ -1,0 +1,120 @@
+{
+            "accessory": "GPIODevice",
+            "name": "Store Light",
+            "type": "Lightbulb",
+            "pin": 13,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "store light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 19,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Wall Light",
+            "type": "Lightbulb",
+            "pin": 22,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Wall light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 20,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Center Light",
+            "type": "Lightbulb",
+            "pin": 27,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Center light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 16,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Side Light",
+            "type": "Lightbulb",
+            "pin": 17,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Side light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 12,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "TV Light",
+            "type": "Lightbulb",
+            "pin": 4,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "TV light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 24,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bar Light",
+            "type": "Lightbulb",
+            "pin": 3,
+            "inverted": false,
+            "initState": 0
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Bar light button",
+            "type": "StatelessProgrammableSwitch",
+            "pin": 23,
+            "inverted": true,
+            "shortPress": 40,
+            "postpone": 40,
+            "longPress": 500
+        },
+        {
+            "accessory": "GPIODevice",
+            "name": "Store",
+            "type": "WindowCovering",
+            "pins": [
+                5,
+                6
+            ],
+            "pulseDuration": 0,
+            "shiftDuration": 14,
+            "initPosition": 99
+        }

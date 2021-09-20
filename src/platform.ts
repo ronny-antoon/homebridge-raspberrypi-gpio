@@ -1,7 +1,9 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
 
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import {LightBulbAccessory} from './lightBulbAccessory';
+import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
+import {LightBulb} from './accessories/LightBulb';
+import {Blind} from './accessories/Blind';
+import {ConfigParser} from './utils/ConfigParser';
 
 /**
  * HomebridgePlatform
@@ -21,7 +23,6 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     public readonly api: API,
   ) {
     this.log.info('Finished initializing platform:', this.config.name);
-
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
     // in order to ensure they weren't added to homebridge already. This event can also be used
@@ -53,16 +54,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     this.log.info('register device entered');
     // EXAMPLE ONLY
     // A real plugin you would register accessories from a user-defined array in the platform config.
-    const configuredDevicesFromFile = [
-      {
-        type: 'lightBulb',
-        uniqueId: 'ABCD',
-        displayName: 'Bedroom Light',
-        inputPin: '1',
-        outputPin: '2',
-        initState: 'High',
-      },
-    ];
+    const configuredDevicesFromFile = ConfigParser();
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of configuredDevicesFromFile) {
@@ -86,7 +78,12 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new LightBulbAccessory(this, existingAccessory);
+        if(device.type === 'WindowCovering') {
+          new Blind(this, existingAccessory);
+        }
+        if(device.type === 'LightBulb') {
+          new LightBulb(this, existingAccessory);
+        }
 
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
         // remove platform accessories when no longer present
@@ -106,7 +103,12 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
         // marwan switch case according to accessory type
-        new LightBulbAccessory(this, accessory);
+        if(device.type === 'WindowCovering') {
+          new Blind(this, accessory);
+        }
+        if(device.type === 'LightBulb') {
+          new LightBulb(this, accessory);
+        }
 
         // link the accessory to your platform
         this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
