@@ -42,8 +42,14 @@
                 }
               ]
             },
-            "name": {
-              "title": "Name",
+            "serialNumber": {
+              "title": "Serial Name",
+              "description": "The HomeKit Serial recognizing.",
+              "type": "string",
+              "required": true
+            },
+            "displayName": {
+              "title": "Display Name",
               "description": "The HomeKit name of the device.",
               "type": "string",
               "required": true
