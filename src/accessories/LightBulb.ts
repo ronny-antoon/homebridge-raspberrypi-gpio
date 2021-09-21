@@ -2,6 +2,7 @@ import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
 import { GenericRPIControllerPlatform } from '../platform';
 import {GpioController} from '../controllers/gpioController';
+import {BinaryValue} from 'onoff';
 
 export class LightBulb {
   // responsible for communicating with home bridge.
@@ -35,7 +36,7 @@ export class LightBulb {
 
     // register handlers for required characteristics
     this.service.getCharacteristic(this.platform.Characteristic.On)
-      .onSet(this.triggerLight.bind(this))             // SET - bind to the `setOn` method below
+      .onSet(this.turnLight.bind(this))             // SET - bind to the `setOn` method below
       .onGet(this.getOnState.bind(this));               // GET - bind to the `getOn` method below
 
 
@@ -49,16 +50,16 @@ export class LightBulb {
       if (err) {
         throw err;
       }
-      this.triggerLight();
+      const currentStatus = this.getOnState();
+      const newStatus = currentStatus === 0 ? 1 : 0;
+      this.turnLight(newStatus);
       this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
     });
   }
 
-  triggerLight() {
+  turnLight(value: CharacteristicValue) {
     // code to turn device on/off
-    const currentStatus = this.getOnState();
-    const newStatus = currentStatus === 0 ? 1 : 0;
-    this.gpioController.setState(this.lightPin, newStatus);
+    this.gpioController.setState(this.lightPin, value as BinaryValue);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
   }
 

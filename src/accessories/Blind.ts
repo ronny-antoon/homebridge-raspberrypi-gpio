@@ -69,8 +69,8 @@ export class Blind {
     this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
 
     // Watch button press
-    let lasttrig1: number = 0;
-    let lasttrig2: number = 0;
+    let lasttrig1 = 0;
+    let lasttrig2 = 0;
     this.gpioController.startWatch(this.buttonUpPin, (err, value) => {
       if (err) {
         throw err;
