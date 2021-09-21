@@ -3,7 +3,7 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, 
 import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
 import {LightBulb} from './accessories/LightBulb';
 import {Blind} from './accessories/Blind';
-import {ConfigParser} from './utils/ConfigParser';
+import {getAccessories} from './utils/ConfigParser';
 
 /**
  * HomebridgePlatform
@@ -54,7 +54,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     this.log.info('register device entered');
     // EXAMPLE ONLY
     // A real plugin you would register accessories from a user-defined array in the platform config.
-    const configuredDevicesFromFile = ConfigParser();
+    const configuredDevicesFromFile = getAccessories(this.config);
 
     // loop over the discovered devices and register each one if it has not already been registered
     for (const device of configuredDevicesFromFile) {
@@ -62,7 +62,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
       // generate a unique id for the accessory this should be generated from
       // something globally unique, but constant, for example, the device serial
       // number or MAC address
-      const uuid = this.api.hap.uuid.generate(device.uniqueId);
+      const uuid = this.api.hap.uuid.generate(device.serialNumber);
 
       // see if an accessory with the same uuid has already been registered and restored from
       // the cached devices we stored in the `configureAccessory` method above

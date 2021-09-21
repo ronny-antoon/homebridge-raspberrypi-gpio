@@ -1,4 +1,4 @@
-import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
+import {Service, PlatformAccessory, CharacteristicValue, Characteristic} from 'homebridge';
 
 import { GenericRPIControllerPlatform } from '../platform';
 import {GpioController} from '../controllers/gpioController';
@@ -59,7 +59,13 @@ export class LightBulb {
 
   turnLight(value: CharacteristicValue) {
     // code to turn device on/off
-    this.gpioController.setState(this.lightPin, value as BinaryValue);
+    let newStat: BinaryValue;
+    if(value){
+      newStat = 1;
+    }else {
+      newStat = 0;
+    }
+    this.gpioController.setState(this.lightPin, newStat);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
   }
 

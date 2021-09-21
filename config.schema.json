@@ -1,15 +1,119 @@
 {
-  "pluginAlias": "HomeBridge-RaspberryPi-GPIO",
+  "pluginAlias": "RPi",
   "pluginType": "platform",
   "singular": true,
+  "headerDisplay": "Homebridge plugin for Raspberry Pi",
+  "footerDisplay": "",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
-        "title": "Name",
+        "description": "Plugin name as displayed in the homebridge log.",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "default": "RPi"
+      },
+      "accessories": {
+        "title": "Accessories",
+        "notitle": true,
+        "type": "array",
+        "items": {
+          "description": "<b>Accessories</b>",
+          "type": "object",
+          "properties": {
+            "accessory": {
+              "title": "Accessory",
+              "description": "The type of the accessory.",
+              "type": "string",
+              "default": "LightBulb",
+              "required": true,
+              "oneOf": [
+                {
+                  "title": "Light",
+                  "enum": [
+                    "LightBulb"
+                  ]
+                },
+                {
+                  "title": "Window Covering",
+                  "enum": [
+                    "WindowCovering"
+                  ]
+                }
+              ]
+            },
+            "name": {
+              "title": "Name",
+              "description": "The HomeKit name of the device.",
+              "type": "string",
+              "required": true
+            },
+            "lightPin": {
+              "title": "Light GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'LightBulb';"
+              }
+            },
+            "buttonPin": {
+              "title": "Button GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'LightBulb';"
+              }
+            },
+            "motorUpPin": {
+              "title": "Motor Up GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            },
+            "motorDownPin": {
+              "title": "Motor Down GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            },
+            "buttonUpPin": {
+              "title": "Button Up GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            },
+            "buttonDownPin": {
+              "title": "Button Down GPIO",
+              "type": "integer",
+              "maximum": 40,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            },
+            "timeToOpen": {
+              "title": "Time To Open",
+              "type": "number",
+              "placeholder": 13,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            },
+            "timeToClose": {
+              "title": "Time To Close",
+              "type": "number",
+              "placeholder": 13,
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"
+              }
+            }
+          }
+        }
       }
     }
   }
