@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "RPi",
+  "pluginAlias": "homebridge-raspberrypi-gpio",
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "Homebridge plugin for Raspberry Pi",

@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": false,
   "displayName": "SmartHomeRonny",
   "name": "@ronnymantoon/homebridge-raspberrypi-gpio",
   "version": "1.0.0",
