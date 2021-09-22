@@ -13,12 +13,6 @@
         "required": true,
         "default": "homebridge-raspberrypi-gpio"
       },
-      "platform": {
-        "description": "Plugin name as displayed in the homebridge log.",
-        "type": "string",
-        "required": true,
-        "default": "homebridge-raspberrypi-gpio"
-      },
       "accessories": {
         "title": "Accessories",
         "notitle": true,

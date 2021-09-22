@@ -1,8 +1,8 @@
 {
   "private": false,
-  "displayName": "SmartHomeRonny",
+  "displayName": "homebridge-raspberrypi-gpio",
   "name": "homebridge-raspberrypi-gpio",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Control smart home accessories by raspberry pi GPIO.",
   "license": "Apache-2.0",
   "repository": {
