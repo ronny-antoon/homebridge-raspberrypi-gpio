@@ -78,10 +78,10 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        if(device.type === 'WindowCovering') {
+        if(device.accessory === 'WindowCovering') {
           new Blind(this, existingAccessory, true);
         }
-        if(device.type === 'LightBulb') {
+        if(device.accessory === 'LightBulb') {
           new LightBulb(this, existingAccessory, true);
         }
 
