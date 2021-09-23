@@ -1,7 +1,12 @@
 import {PlatformAccessory, Service} from 'homebridge';
 import {GpioController} from '../controllers/gpioController';
 import {GenericRPIControllerPlatform} from '../platform';
-import {DEFAULT_TIME_TO_CLOSE_BLIND, DEFAULT_TIME_TO_OPEN_BLIND, INTERVAL_BLIND} from '../configurations/constants';
+import {
+  DEFAULT_CURRENT_PERCENTAGE_BLIND, DEFAULT_TARGET_PERCENTAGE_BLIND,
+  DEFAULT_TIME_TO_CLOSE_BLIND,
+  DEFAULT_TIME_TO_OPEN_BLIND,
+  INTERVAL_BLIND,
+} from '../configurations/constants';
 
 
 export class Blind {
@@ -25,7 +30,6 @@ export class Blind {
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
-    private readonly isCached: boolean,
   ) {
     //set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -41,13 +45,8 @@ export class Blind {
     this.buttonDownPin = accessory.context.device.buttonDownPin;
     this.timeToOpen = accessory.context.device.timeToOpen || DEFAULT_TIME_TO_OPEN_BLIND;
     this.timeToClose = accessory.context.device.timeToClose || DEFAULT_TIME_TO_CLOSE_BLIND;
-    if(isCached){
-      this.targetPercentage = accessory.context.device.targetPercentage;
-      this.currentPercentage = accessory.context.device.currentPercentage;
-    }else {
-      this.targetPercentage = 0;
-      this.currentPercentage = 100;
-    }
+    this.targetPercentage = accessory.context.device.currentPosition || DEFAULT_TARGET_PERCENTAGE_BLIND;
+    this.currentPercentage = accessory.context.device.currentPosition || DEFAULT_CURRENT_PERCENTAGE_BLIND;
 
     // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
     // you can create multiple services for each accessory
@@ -114,6 +113,7 @@ export class Blind {
    */
   handleCurrentPositionGet() {
     //this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
+    this.accessory.context.device.currentPosition = this.currentPercentage;
     return this.currentPercentage;
   }
 
@@ -154,7 +154,9 @@ export class Blind {
     if (this.handlePositionStateGet() !== this.platform.Characteristic.PositionState.STOPPED) {
       this.gpioController.setState(this.motorUpPin, 0);
       this.gpioController.setState(this.motorDownPin, 0);
-      clearInterval(this.intervalMoving!);
+      if (this.intervalMoving !== undefined) {
+        clearInterval(this.intervalMoving);
+      }
     }
     this.targetPercentage = target;
     this.service.getCharacteristic(this.platform.Characteristic.TargetPosition).updateValue(this.handleTargetPositionGet());
@@ -179,6 +181,7 @@ export class Blind {
         tickerPercentage = ((INTERVAL_BLIND / 1000) / this.timeToClose) * -1;
       } else {
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
+        this.accessory.context.device.currentPosition = this.currentPercentage;
         this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
         return;
       }
@@ -201,6 +204,7 @@ export class Blind {
         this.currentPercentage = this.targetPercentage;
         clearInterval(this.intervalMoving!);
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
+        this.accessory.context.device.currentPosition = this.currentPercentage;
         this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
       }
     }, INTERVAL_BLIND);

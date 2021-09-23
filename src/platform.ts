@@ -4,6 +4,8 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
 import {LightBulb} from './accessories/LightBulb';
 import {Blind} from './accessories/Blind';
 import {getAccessories} from './utils/ConfigParser';
+import {Button} from './accessories/Button';
+import {AccessoryType} from './utils/accessoriesTypes';
 
 /**
  * HomebridgePlatform
@@ -71,20 +73,23 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
       if (existingAccessory) {
         // the accessory already exists
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
-
+        const ddd: AccessoryType = existingAccessory.context.device;
+        this.log.info('Restoring existing accessory from cache-------------------------------------:', ddd );// displayName
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         // existingAccessory.context.device = device;
         // this.api.updatePlatformAccessories([existingAccessory]);
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        if(device.accessory === 'WindowCovering') {
-          new Blind(this, existingAccessory, true);
+        if(existingAccessory.context.device.accessory === 'WindowCovering') {
+          new Blind(this, existingAccessory);
         }
-        if(device.accessory === 'LightBulb') {
-          new LightBulb(this, existingAccessory, true);
+        if(existingAccessory.context.device.accessory === 'LightBulb') {
+          new LightBulb(this, existingAccessory);
         }
-
+        if(existingAccessory.context.device.accessory === 'StatelessProgrammableSwitch') {
+          new Button(this, existingAccessory);
+        }
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
         // remove platform accessories when no longer present
         // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
@@ -103,10 +108,13 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // this is imported from `platformAccessory.ts`
         // marwan switch case according to accessory type
         if(device.accessory === 'WindowCovering') {
-          new Blind(this, accessory, false);
+          new Blind(this, accessory);
         }
         if(device.accessory === 'LightBulb') {
-          new LightBulb(this, accessory, false);
+          new LightBulb(this, accessory);
+        }
+        if(device.accessory === 'StatelessProgrammableSwitch') {
+          new Button(this, accessory);
         }
 
         // link the accessory to your platform

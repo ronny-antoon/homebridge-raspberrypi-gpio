@@ -1,4 +1,4 @@
-import {Service, PlatformAccessory, CharacteristicValue, Characteristic} from 'homebridge';
+import {Service, PlatformAccessory, CharacteristicValue} from 'homebridge';
 
 import { GenericRPIControllerPlatform } from '../platform';
 import {GpioController} from '../controllers/gpioController';
@@ -12,11 +12,11 @@ export class LightBulb {
   // GPIO Pins raspberry pi
   private readonly buttonPin: number;
   private readonly lightPin: number;
+  private onState: 0 | 1;
 
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
-    private readonly isCached: boolean,
   ) {
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -28,7 +28,7 @@ export class LightBulb {
     // Configure Light Controller
     this.buttonPin = accessory.context.device.buttonPin;
     this.lightPin = accessory.context.device.lightPin;
-
+    this.onState = accessory.context.device.onState || 0;
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
@@ -55,17 +55,16 @@ export class LightBulb {
       this.turnLight(newStatus);
       this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
     });
-    if(isCached){
-      this.turnLight(accessory.context.device.On);
-    }
+    this.turnLight(this.onState);
+
   }
 
   turnLight(value: CharacteristicValue) {
     // code to turn device on/off
     let newStat: BinaryValue;
-    if(value){
+    if (value) {
       newStat = 1;
-    }else {
+    } else {
       newStat = 0;
     }
     this.gpioController.setState(this.lightPin, newStat);
@@ -86,7 +85,8 @@ export class LightBulb {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   getOnState(): CharacteristicValue {
-    return this.gpioController.getState(this.lightPin);
+    this.onState = this.gpioController.getState(this.lightPin);
+    return this.onState;
   }
 
 }

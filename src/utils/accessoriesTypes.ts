@@ -10,6 +10,7 @@ interface LightAccessoryType extends AccessoryInterface {
   accessory: 'LightBulb';
   lightPin: number;
   buttonPin: number;
+  onState: 0 | 1;
 }
 
 interface BlindAccessoryType extends AccessoryInterface {
@@ -20,5 +21,12 @@ interface BlindAccessoryType extends AccessoryInterface {
   buttonDownPin: number;
   timeToOpen: number;
   timeToClose: number;
+  targetPosition: number;
+  currentPosition: number;
 }
-export type AccessoryType = LightAccessoryType | BlindAccessoryType;
+
+interface ButtonAccessoryType extends AccessoryInterface{
+  accessory: 'StatelessProgrammableSwitch';
+  buttonPin: number;
+}
+export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType;
