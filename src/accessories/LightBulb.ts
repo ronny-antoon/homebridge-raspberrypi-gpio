@@ -16,12 +16,13 @@ export class LightBulb {
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
+    private readonly isCached: boolean,
   ) {
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.Manufacturer || 'Default-Manufacturer-Ronny')
-      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.Model || 'Default-Model-Ronny')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.SerialNumber || 'Default-Serial-Ronny')
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.manufacturer || 'Default-Manufacturer-Ronny')
+      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.model || 'Default-Model-Ronny')
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.serialNumber || 'Default-Serial-Ronny')
       .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
 
     // Configure Light Controller
@@ -39,11 +40,10 @@ export class LightBulb {
       .onSet(this.turnLight.bind(this))             // SET - bind to the `setOn` method below
       .onGet(this.getOnState.bind(this));               // GET - bind to the `getOn` method below
 
-
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
-    this.gpioController.initGPIO(this.buttonPin, 'in');
-    this.gpioController.initGPIO(this.lightPin, 'out');
+    this.gpioController.exportGPIO(this.buttonPin, 'in');
+    this.gpioController.exportGPIO(this.lightPin, 'out');
 
     // Watch button press
     this.gpioController.startWatch(this.buttonPin, (err) => {
@@ -55,6 +55,9 @@ export class LightBulb {
       this.turnLight(newStatus);
       this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
     });
+    if(isCached){
+      this.turnLight(accessory.context.device.On);
+    }
   }
 
   turnLight(value: CharacteristicValue) {

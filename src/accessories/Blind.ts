@@ -1,7 +1,7 @@
 import {PlatformAccessory, Service} from 'homebridge';
 import {GpioController} from '../controllers/gpioController';
 import {GenericRPIControllerPlatform} from '../platform';
-import {INTERVAL_BLIND} from '../configurations/constants';
+import {DEFAULT_TIME_TO_CLOSE_BLIND, DEFAULT_TIME_TO_OPEN_BLIND, INTERVAL_BLIND} from '../configurations/constants';
 
 
 export class Blind {
@@ -25,6 +25,7 @@ export class Blind {
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
+    private readonly isCached: boolean,
   ) {
     //set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
@@ -38,10 +39,15 @@ export class Blind {
     this.motorDownPin = accessory.context.device.motorDownPin;
     this.buttonUpPin = accessory.context.device.buttonUpPin;
     this.buttonDownPin = accessory.context.device.buttonDownPin;
-    this.timeToOpen = accessory.context.device.timeToOpen || 13;
-    this.timeToClose = accessory.context.device.timeToClose || 13;
-    this.targetPercentage = 0;
-    this.currentPercentage = 100;
+    this.timeToOpen = accessory.context.device.timeToOpen || DEFAULT_TIME_TO_OPEN_BLIND;
+    this.timeToClose = accessory.context.device.timeToClose || DEFAULT_TIME_TO_CLOSE_BLIND;
+    if(isCached){
+      this.targetPercentage = accessory.context.device.targetPercentage;
+      this.currentPercentage = accessory.context.device.currentPercentage;
+    }else {
+      this.targetPercentage = 0;
+      this.currentPercentage = 100;
+    }
 
     // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
     // you can create multiple services for each accessory
@@ -63,10 +69,10 @@ export class Blind {
 
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
-    this.gpioController.initGPIO(this.motorUpPin, 'out');
-    this.gpioController.initGPIO(this.motorDownPin, 'out');
-    this.gpioController.initGPIO(this.buttonUpPin, 'in', 'both');
-    this.gpioController.initGPIO(this.buttonDownPin, 'in', 'both');
+    this.gpioController.exportGPIO(this.motorUpPin, 'out');
+    this.gpioController.exportGPIO(this.motorDownPin, 'out');
+    this.gpioController.exportGPIO(this.buttonUpPin, 'in', 'both');
+    this.gpioController.exportGPIO(this.buttonDownPin, 'in', 'both');
 
     // Watch button press
     let lasttrig1 = 0;

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/HomeBridge-RaspberryPi-GPIO.iml" filepath="$PROJECT_DIR$/.idea/HomeBridge-RaspberryPi-GPIO.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/homebridge-raspberrypi-gpio.iml" filepath="$PROJECT_DIR$/.idea/homebridge-raspberrypi-gpio.iml" />
     </modules>
   </component>
 </project>

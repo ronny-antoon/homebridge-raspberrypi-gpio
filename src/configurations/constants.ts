@@ -2,7 +2,9 @@
 export const INTERVAL_BLIND = 20;
 // debounceTimeout for input raspberry pi
 export const DEBOUNCE_TIMEOUT = 80;
-
+// default time to close and open blinds according to trying multiple in real life
+export const DEFAULT_TIME_TO_CLOSE_BLIND = 13;
+export const DEFAULT_TIME_TO_OPEN_BLIND = 13;
 // output pins in the board   GPIO
 export const OUTPUT_1 = 13;
 export const OUTPUT_2 = 6;

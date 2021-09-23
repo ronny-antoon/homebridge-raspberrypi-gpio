@@ -17,7 +17,7 @@ export class GpioController {
     return this._instance || (this._instance = new this(log));
   }
 
-  public initGPIO(_gpio: number, _direction: Direction, _edge: Edge = 'rising', _debounceTimeout: number = DEBOUNCE_TIMEOUT) {
+  public exportGPIO(_gpio: number, _direction: Direction, _edge: Edge = 'rising', _debounceTimeout: number = DEBOUNCE_TIMEOUT) {
     if (!(Gpio.accessible)) {
       throw new Error('gpioController error: Gpio not accessible');
     }

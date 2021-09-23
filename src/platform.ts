@@ -79,10 +79,10 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         if(device.type === 'WindowCovering') {
-          new Blind(this, existingAccessory);
+          new Blind(this, existingAccessory, true);
         }
         if(device.type === 'LightBulb') {
-          new LightBulb(this, existingAccessory);
+          new LightBulb(this, existingAccessory, true);
         }
 
         // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
@@ -92,7 +92,6 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
       } else {
         // the accessory does not yet exist, so we need to create it
         this.log.info('Adding new accessory:', device.displayName);
-
         // create a new accessory
         const accessory = new this.api.platformAccessory(device.displayName, uuid);
 
@@ -103,11 +102,11 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
         // marwan switch case according to accessory type
-        if(device.type === 'WindowCovering') {
-          new Blind(this, accessory);
+        if(device.accessory === 'WindowCovering') {
+          new Blind(this, accessory, false);
         }
-        if(device.type === 'LightBulb') {
-          new LightBulb(this, accessory);
+        if(device.accessory === 'LightBulb') {
+          new LightBulb(this, accessory, false);
         }
 
         // link the accessory to your platform
