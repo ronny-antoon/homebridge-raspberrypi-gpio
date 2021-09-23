@@ -73,8 +73,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
       if (existingAccessory) {
         // the accessory already exists
         this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
-        const ddd: AccessoryType = existingAccessory.context.device;
-        this.log.info('Restoring existing accessory from cache-------------------------------------:', ddd );// displayName
+
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         // existingAccessory.context.device = device;
         // this.api.updatePlatformAccessories([existingAccessory]);

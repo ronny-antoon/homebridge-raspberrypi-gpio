@@ -12,7 +12,6 @@ export class LightBulb {
   // GPIO Pins raspberry pi
   private readonly buttonPin: number;
   private readonly lightPin: number;
-  private onState: 0 | 1;
 
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
@@ -28,7 +27,8 @@ export class LightBulb {
     // Configure Light Controller
     this.buttonPin = accessory.context.device.buttonPin;
     this.lightPin = accessory.context.device.lightPin;
-    this.onState = accessory.context.device.onState || 0;
+    this.setOn(this.getOn() || 0);
+
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     this.service = this.accessory.getService(this.platform.Service.Lightbulb) || this.accessory.addService(this.platform.Service.Lightbulb);
@@ -55,7 +55,7 @@ export class LightBulb {
       this.turnLight(newStatus);
       this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
     });
-    this.turnLight(this.onState);
+    this.turnLight(this.getOn());
 
   }
 
@@ -67,6 +67,7 @@ export class LightBulb {
     } else {
       newStat = 0;
     }
+    this.setOn(value);
     this.gpioController.setState(this.lightPin, newStat);
     this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
   }
@@ -85,8 +86,15 @@ export class LightBulb {
    * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
    */
   getOnState(): CharacteristicValue {
-    this.onState = this.gpioController.getState(this.lightPin);
-    return this.onState;
+    this.setOn(this.gpioController.getState(this.lightPin));
+    return this.getOn();
   }
 
+  private setOn(value: CharacteristicValue): CharacteristicValue | void{
+    return this.accessory.context.device.onState = value;
+  }
+
+  private getOn(): CharacteristicValue{
+    return this.accessory.context.device.onState;
+  }
 }

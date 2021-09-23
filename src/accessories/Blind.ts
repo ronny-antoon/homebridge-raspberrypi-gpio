@@ -8,7 +8,6 @@ import {
   INTERVAL_BLIND,
 } from '../configurations/constants';
 
-
 export class Blind {
   // responsible for communicating with home bridge.
   private service: Service;
@@ -23,7 +22,6 @@ export class Blind {
   private readonly timeToOpen: number; // seconds
   private readonly timeToClose: number;// seconds
   private targetPercentage: number;     // where to goes
-  private currentPercentage: number;       // 0 full close, 100 full open
   private intervalMoving?: ReturnType<typeof setInterval>;
 
   // constructor getting platform and accessory
@@ -46,7 +44,7 @@ export class Blind {
     this.timeToOpen = accessory.context.device.timeToOpen || DEFAULT_TIME_TO_OPEN_BLIND;
     this.timeToClose = accessory.context.device.timeToClose || DEFAULT_TIME_TO_CLOSE_BLIND;
     this.targetPercentage = accessory.context.device.currentPosition || DEFAULT_TARGET_PERCENTAGE_BLIND;
-    this.currentPercentage = accessory.context.device.currentPosition || DEFAULT_CURRENT_PERCENTAGE_BLIND;
+    this.setCurrentPercentage(accessory.context.device.currentPosition || DEFAULT_CURRENT_PERCENTAGE_BLIND);
 
     // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
     // you can create multiple services for each accessory
@@ -86,7 +84,7 @@ export class Blind {
       }
       if (value === 0 && lasttrig1 === 1) {
         lasttrig1 = 0;
-        this.handleTargetPositionSet(this.currentPercentage);
+        this.handleTargetPositionSet(this.getCurrentPercentage());
       }
     });
 
@@ -100,7 +98,7 @@ export class Blind {
       }
       if (value === 0 && lasttrig2 === 1) {
         lasttrig2 = 0;
-        this.handleTargetPositionSet(this.currentPercentage);
+        this.handleTargetPositionSet(this.getCurrentPercentage());
       }
     });
 
@@ -113,8 +111,7 @@ export class Blind {
    */
   handleCurrentPositionGet() {
     //this.platform.log.info('Triggered GET CurrentPosition: ' + this.currentPercentage);
-    this.accessory.context.device.currentPosition = this.currentPercentage;
-    return this.currentPercentage;
+    return this.getCurrentPercentage();
   }
 
 
@@ -181,7 +178,6 @@ export class Blind {
         tickerPercentage = ((INTERVAL_BLIND / 1000) / this.timeToClose) * -1;
       } else {
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
-        this.accessory.context.device.currentPosition = this.currentPercentage;
         this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
         return;
       }
@@ -189,24 +185,28 @@ export class Blind {
 
     // Update position every IntervalTime
     this.intervalMoving = setInterval(() => {
-      this.currentPercentage += (tickerPercentage * 100);
-      if (this.currentPercentage > 100) {
-        this.currentPercentage = 100;
-      }
-      if (this.currentPercentage < 0) {
-        this.currentPercentage = 0;
-      }
+      this.setCurrentPercentage(this.getCurrentPercentage() + (tickerPercentage * 100));
+
+      this.setCurrentPercentage(Math.max(0, this.getCurrentPercentage()));
+      this.setCurrentPercentage(Math.min(100, this.getCurrentPercentage()));
       // check if the blind achieves the target
       if (this.handlePositionStateGet() !== direction) {
         // stop motor and clear interval
         this.gpioController.setState(this.motorUpPin, 0);
         this.gpioController.setState(this.motorDownPin, 0);
-        this.currentPercentage = this.targetPercentage;
+        this.setCurrentPercentage(this.targetPercentage);
         clearInterval(this.intervalMoving!);
         this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition).updateValue(this.handleCurrentPositionGet());
-        this.accessory.context.device.currentPosition = this.currentPercentage;
         this.service.getCharacteristic(this.platform.Characteristic.PositionState).updateValue(this.handlePositionStateGet());
       }
     }, INTERVAL_BLIND);
+  }
+
+  private getCurrentPercentage(): number{
+    return this.accessory.context.device.currentPosition;
+  }
+
+  private setCurrentPercentage(value: number): number | void{
+    return this.accessory.context.device.currentPercentage = value;
   }
 }
