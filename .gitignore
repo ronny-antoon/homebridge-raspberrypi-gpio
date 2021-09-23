@@ -111,6 +111,10 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+.vscode
+
+# webStorm project
+.idea
 
 # yarn v2
 
