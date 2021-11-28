@@ -29,4 +29,9 @@ interface ButtonAccessoryType extends AccessoryInterface{
   accessory: 'StatelessProgrammableSwitch';
   buttonPin: number;
 }
-export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType;
+
+interface BoilerAccessoryType extends AccessoryInterface{
+  accessory: 'Boiler';
+  boilerPin: number;
+}
+export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType | BoilerAccessoryType;
