@@ -1,5 +1,5 @@
 /**
- * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
+ * This is the name of the platform that users will use to register the plugin in the Homebridge config_schema.json
  */
 export const PLATFORM_NAME = 'homebridge-raspberrypi-gpio';
 

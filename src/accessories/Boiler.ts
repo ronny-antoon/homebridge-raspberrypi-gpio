@@ -30,6 +30,8 @@ export class Boiler {
 
   private durationTime;
 
+  private timer;
+
   constructor(
     private readonly platform: GenericRPIControllerPlatform,
     private readonly accessory: PlatformAccessory,
@@ -46,17 +48,16 @@ export class Boiler {
     this.isActive = this.platform.Characteristic.Active.INACTIVE;
     this.inUse = this.platform.Characteristic.InUse.NOT_IN_USE;
     this.valveType = this.platform.Characteristic.ValveType.SHOWER_HEAD;
-    this.isConfigured = this.platform.Characteristic.IsConfigured.NOT_CONFIGURED;
-    this.name = accessory.context.device.displayName || 'nonono';
-    this.remainingDuration = 0;
-    this.serviceLabelIndex = 10;
+    this.isConfigured = this.platform.Characteristic.IsConfigured.CONFIGURED;
+    this.name = accessory.context.device.displayName || 'No name';
+    this.remainingDuration = 20;
+    this.serviceLabelIndex = 1;
     this.durationTime = DEFAULT_TIME_TO_STOP_BOILER;
     this.updateCachedDevice();
 
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
     this.gpioController.exportGPIO(this.boilerPin, 'out');
-    this.setValveState(0);
 
     // get the Valve service if it exists, otherwise create a new Valve service
     // you can create multiple services for each accessory
@@ -80,8 +81,8 @@ export class Boiler {
       .onSet(this.setIsConfigured.bind(this))             // SET - bind to the `setOn` method below
       .onGet(this.getIsConfigured.bind(this));
 
-    this.service.getCharacteristic(this.platform.Characteristic.Name)
-      .onGet(this.getName.bind(this));
+    // this.service.getCharacteristic(this.platform.Characteristic.Name)
+    //   .onGet(this.getName.bind(this));
 
     this.service.getCharacteristic(this.platform.Characteristic.RemainingDuration)
       .onGet(this.getRemainingDuration.bind(this));
@@ -90,11 +91,14 @@ export class Boiler {
       .onGet(this.getServiceLabelIndex.bind(this));
 
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration)
-      .onSet(this.setDurationTime.bind(this))             // SET - bind to the `setOn` method below
-      .onGet(this.getDurationTime.bind(this));
+      .onSet(this.setDurationTime.bind(this))// SET - bind to the `setOn` method below
+      .onGet(this.getDurationTime.bind(this))
+      .setProps({minValue: 600, maxValue: 3600, validValues: [600, 900, 1200, 1800, 2700, 3600]});
 
-    this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
-      .onGet(this.getStatusFault.bind(this));
+    // this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
+    //   .onGet(this.getStatusFault.bind(this));
+
+    this.setValveState(0);
   }
 
   private updateCachedDevice(): void{
@@ -129,6 +133,9 @@ export class Boiler {
       newState = 1;
     }else {
       newState = 0;
+      if(this.timer){
+        clearInterval(this.timer);
+      }
     }
     this.gpioController.setState(this.boilerPin, newState);
     this.isActive = newState;
@@ -136,14 +143,36 @@ export class Boiler {
 
     this.service.getCharacteristic(this.platform.Characteristic.Active).updateValue(newState);
     this.service.getCharacteristic(this.platform.Characteristic.InUse).updateValue(newState);
+    if(value){
+      if(this.timer){
+        clearInterval(this.timer);
+      }
+      this.remainingDuration = this.getDurationTime();
+      this.timer = setInterval(()=>{
+        if(this.remainingDuration <= 0) {
+          this.remainingDuration = 0;
+          clearInterval(this.timer);
+          this.setValveState(0);
+          return;
+        }
+        this.remainingDuration--;
+        this.service.getCharacteristic(this.platform.Characteristic.RemainingDuration).updateValue(this.remainingDuration);
+      }, 1000);
+    }
+    // eslint-disable-next-line no-console
+    console.log('SET valve state :   ', value);
     return newState;
   }
 
   private getValveState(): CharacteristicValue{
+    // eslint-disable-next-line no-console
+    console.log('get valve state : ', this.gpioController.getState(this.boilerPin));
     return this.gpioController.getState(this.boilerPin);
   }
 
   private getValveType(): CharacteristicValue{
+    // eslint-disable-next-line no-console
+    console.log('get valve type : ', this.valveType);
     return this.valveType;
   }
 
@@ -157,12 +186,14 @@ export class Boiler {
     return this.isConfigured;
   }
 
-  private getName(): CharacteristicValue{
-    return this.name;
-  }
+  // private getName(): CharacteristicValue{
+  //   return this.name;
+  // }
 
   private getRemainingDuration(): CharacteristicValue{
-    return (this.remainingDuration++);
+    // eslint-disable-next-line no-console
+    console.log('get remaining duration time : ', this.remainingDuration);
+    return (this.remainingDuration);
   }
 
   private getServiceLabelIndex(): CharacteristicValue{
@@ -172,14 +203,18 @@ export class Boiler {
   private setDurationTime(value : CharacteristicValue) : CharacteristicValue{
     this.durationTime = value;
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration).updateValue(this.durationTime);
+    // eslint-disable-next-line no-console
+    console.log('SET duration time : ', this.durationTime);
     return this.durationTime;
   }
 
   private getDurationTime(): CharacteristicValue{
+    // eslint-disable-next-line no-console
+    console.log('get duration time : ', this.durationTime);
     return this.durationTime;
   }
 
-  private getStatusFault(): CharacteristicValue{
-    return 0;
-  }
+  // private getStatusFault(): CharacteristicValue{
+  //   return 0;
+  // }
 }
