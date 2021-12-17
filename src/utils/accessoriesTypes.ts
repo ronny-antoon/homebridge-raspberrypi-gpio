@@ -34,4 +34,10 @@ interface BoilerAccessoryType extends AccessoryInterface{
   accessory: 'Boiler';
   boilerPin: number;
 }
-export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType | BoilerAccessoryType;
+
+interface OutletAccessoryType extends AccessoryInterface{
+  accessory: 'Outlet';
+  outletPin: number;
+}
+
+export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType | BoilerAccessoryType | OutletAccessoryType;
