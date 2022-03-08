@@ -9,7 +9,7 @@ interface AccessoryInterface {
 interface LightAccessoryType extends AccessoryInterface {
   accessory: 'LightBulb';
   lightPin: number;
-  buttonPin: number;
+  lightButtonPin: number;
   onState: 0 | 1;
 }
 
@@ -33,6 +33,7 @@ interface ButtonAccessoryType extends AccessoryInterface{
 interface BoilerAccessoryType extends AccessoryInterface{
   accessory: 'Boiler';
   boilerPin: number;
+  boilerButtonPin: number;
 }
 
 interface OutletAccessoryType extends AccessoryInterface{

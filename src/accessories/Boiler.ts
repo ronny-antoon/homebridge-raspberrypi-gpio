@@ -14,6 +14,8 @@ export class Boiler {
   // GPIO Pins raspberry pi
   private readonly boilerPin: number;
 
+  private readonly boilerButtonPin: number;
+
   private isActive;
 
   private inUse;
@@ -45,6 +47,7 @@ export class Boiler {
 
     // Configure Boiler Controller
     this.boilerPin = accessory.context.device.boilerPin;
+    this.boilerButtonPin = accessory.context.device.boilerButtonPin;
     this.isActive = this.platform.Characteristic.Active.INACTIVE;
     this.inUse = this.platform.Characteristic.InUse.NOT_IN_USE;
     this.valveType = this.platform.Characteristic.ValveType.SHOWER_HEAD;
@@ -58,6 +61,7 @@ export class Boiler {
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
     this.gpioController.exportGPIO(this.boilerPin, 'out');
+    this.gpioController.exportGPIO(this.boilerButtonPin, 'in', 'both');
 
     // get the Valve service if it exists, otherwise create a new Valve service
     // you can create multiple services for each accessory
@@ -98,11 +102,22 @@ export class Boiler {
     // this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
     //   .onGet(this.getStatusFault.bind(this));
 
+    // Watch button press
+    this.gpioController.startWatch(this.boilerButtonPin, (err) => {
+      if (err) {
+        throw err;
+      }
+      const currentStatus = this.getValveState();
+      const newStatus = currentStatus === 0 ? 1 : 0;
+      this.setValveState(newStatus);
+    });
+
     this.setValveState(0);
   }
 
   private updateCachedDevice(): void{
     this.accessory.context.device.boilerPin = this.boilerPin;
+    this.accessory.context.device.boilerButtonPin = this.boilerButtonPin;
     this.accessory.context.device.isActive = this.isActive;
     this.accessory.context.device.inUse = this.inUse;
     this.accessory.context.device.valveType = this.valveType;

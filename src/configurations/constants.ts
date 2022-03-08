@@ -8,7 +8,7 @@ export const DEFAULT_TIME_TO_OPEN_BLIND = 13;
 export const DEFAULT_CURRENT_PERCENTAGE_BLIND = 100;
 export const DEFAULT_TARGET_PERCENTAGE_BLIND = 0;
 // default time to stop boiler
-export const DEFAULT_TIME_TO_STOP_BOILER = 600; // in seconds
+export const DEFAULT_TIME_TO_STOP_BOILER = 900; // in seconds
 
 // output pins in the board   GPIO
 export const OUTPUT_1 = 13;

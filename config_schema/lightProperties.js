@@ -14,7 +14,7 @@ module.exports = {
     ...onlyLightBulb,
     ...outputProperties
   },
-  "buttonPin": {
+  "lightButtonPin": {
     "title": "Button GPIO",
     "type": "number",
     ...onlyLightBulb,

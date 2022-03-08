@@ -10,7 +10,7 @@ export class LightBulb {
   // responsible for communicating with Raspberry Pi GPIO
   private gpioController: GpioController;
   // GPIO Pins raspberry pi
-  private readonly buttonPin: number;
+  private readonly lightButtonPin: number;
   private readonly lightPin: number;
 
   constructor(
@@ -25,7 +25,7 @@ export class LightBulb {
       .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
 
     // Configure Light Controller
-    this.buttonPin = accessory.context.device.buttonPin;
+    this.lightButtonPin = accessory.context.device.lightButtonPin;
     this.lightPin = accessory.context.device.lightPin;
     this.setOn(this.getOn() || 0);
 
@@ -42,11 +42,11 @@ export class LightBulb {
 
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
-    this.gpioController.exportGPIO(this.buttonPin, 'in');
+    this.gpioController.exportGPIO(this.lightButtonPin, 'in');
     this.gpioController.exportGPIO(this.lightPin, 'out');
 
     // Watch button press
-    this.gpioController.startWatch(this.buttonPin, (err) => {
+    this.gpioController.startWatch(this.lightButtonPin, (err) => {
       if (err) {
         throw err;
       }
