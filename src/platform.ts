@@ -6,6 +6,7 @@ import {Blind} from './accessories/Blind';
 import {getAccessories} from './utils/ConfigParser';
 import {Button} from './accessories/Button';
 import {Boiler} from './accessories/Boiler';
+import {Outlet} from './accessories/Outlet';
 
 /**
  * HomebridgePlatform
@@ -92,6 +93,9 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (existingAccessory.context.device.accessory === 'Boiler') {
             new Boiler(this, existingAccessory);
           }
+          if (existingAccessory.context.device.accessory === 'Outlet') {
+            new Outlet(this, existingAccessory);
+          }
           // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
           // remove platform accessories when no longer present
           // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
@@ -120,6 +124,9 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           }
           if (device.accessory === 'Boiler') {
             new Boiler(this, accessory);
+          }
+          if (device.accessory === 'Outlet') {
+            new Outlet(this, accessory);
           }
 
           // link the accessory to your platform

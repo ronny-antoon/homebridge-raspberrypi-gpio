@@ -93,7 +93,7 @@ export class Boiler {
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration)
       .onSet(this.setDurationTime.bind(this))// SET - bind to the `setOn` method below
       .onGet(this.getDurationTime.bind(this))
-      .setProps({minValue: 600, maxValue: 3600, validValues: [600, 900, 1200, 1800, 2700, 3600]});
+      .setProps({minValue: 900, maxValue: 5400, validValues: [ 900, 1200, 1800, 2700, 3600, 4500, 5400]});
 
     // this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
     //   .onGet(this.getStatusFault.bind(this));
