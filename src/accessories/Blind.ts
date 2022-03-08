@@ -207,6 +207,6 @@ export class Blind {
   }
 
   private setCurrentPercentage(value: number): number | void{
-    return this.accessory.context.device.currentPercentage = value;
+    return this.accessory.context.device.currentPosition = value;
   }
 }
