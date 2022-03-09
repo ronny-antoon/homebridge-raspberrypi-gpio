@@ -71,8 +71,8 @@ export class Door {
     console.log('getLockCurrentState');
     return (
       this.gpioController.getState(this.doorPin) == 0 ?
-        this.platform.Characteristic.LockCurrentState.SECURED :
-        this.platform.Characteristic.LockCurrentState.UNSECURED
+        this.platform.Characteristic.LockCurrentState.UNSECURED :
+        this.platform.Characteristic.LockCurrentState.SECURED
     );
   }
 
