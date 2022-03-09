@@ -47,9 +47,9 @@
                   ]
                 },
                 {
-                  "title": "Outlet",
+                  "title": "Door",
                   "enum": [
-                    "Outlet"
+                    "Door"
                   ]
                 }
               ]

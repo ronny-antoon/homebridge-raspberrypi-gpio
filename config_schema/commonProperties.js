@@ -27,9 +27,9 @@ module.exports = { // add accessories type
         ]
       },
       {
-        "title": "Outlet",
+        "title": "Door",
         "enum": [
-          "Outlet"
+          "Door"
         ]
       }
     ]
