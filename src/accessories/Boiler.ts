@@ -1,4 +1,4 @@
-import {Service, PlatformAccessory, CharacteristicValue, Characteristic} from 'homebridge';
+import {Service, PlatformAccessory, CharacteristicValue} from 'homebridge';
 
 import { GenericRPIControllerPlatform } from '../platform';
 import {GpioController} from '../controllers/gpioController';
@@ -61,7 +61,7 @@ export class Boiler {
     //Configure raspberry pi controller
     this.gpioController = GpioController.Instance(platform.log);
     this.gpioController.exportGPIO(this.boilerPin, 'out');
-    this.gpioController.exportGPIO(this.boilerButtonPin, 'in', 'both');
+    this.gpioController.exportGPIO(this.boilerButtonPin, 'in', 'rising', 100);
 
     // get the Valve service if it exists, otherwise create a new Valve service
     // you can create multiple services for each accessory
