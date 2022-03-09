@@ -71,8 +71,8 @@ export class Door {
     console.log('getLockCurrentState');
     return (
       this.gpioController.getState(this.doorPin) == 0 ?
-        this.platform.Characteristic.LockCurrentState.UNSECURED :
-        this.platform.Characteristic.LockCurrentState.SECURED
+        this.platform.Characteristic.LockCurrentState.SECURED :
+        this.platform.Characteristic.LockCurrentState.UNSECURED
     );
   }
 
@@ -85,7 +85,7 @@ export class Door {
   setLockTargetState(value: CharacteristicValue) : CharacteristicValue | void {
     // eslint-disable-next-line no-console
     console.log('setLockTargetState---------------------------------');
-    if (value) {
+    if (!value) {
       this.gpioController.setState(this.doorPin, 1);
       this.service.getCharacteristic(this.platform.Characteristic.LockCurrentState).updateValue(this.getLockCurrentState());
       this.timeOutMoving = setTimeout(() => {
