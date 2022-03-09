@@ -97,7 +97,7 @@ export class Boiler {
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration)
       .onSet(this.setDurationTime.bind(this))// SET - bind to the `setOn` method below
       .onGet(this.getDurationTime.bind(this))
-      .setProps({minValue: 1200, maxValue: 5400, minStep: 600});
+      .setProps({minValue: 1200, maxValue: 5400, minStep: 600, validValueRanges:[1200, 5400]});
 
     // this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
     //   .onGet(this.getStatusFault.bind(this));
@@ -171,7 +171,7 @@ export class Boiler {
           return;
         }
         this.remainingDuration--;
-        this.service.getCharacteristic(this.platform.Characteristic.RemainingDuration).updateValue(this.remainingDuration);
+        this.service.getCharacteristic(this.platform.Characteristic.RemainingDuration).updateValue(this.getRemainingDuration());
       }, 1000);
     }
     // eslint-disable-next-line no-console
