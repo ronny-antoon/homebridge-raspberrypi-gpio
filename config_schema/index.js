@@ -5,7 +5,7 @@ const commonProperties = require('./commonProperties')
 const lightProperties = require('./lightProperties')
 const windowCoveringProperties = require('./windowCoveringProperties')
 const boilerProperties = require('./boilerProperties')
-const outletProperties = require('./outletProperties')
+const doorProperties = require('./doorProperties')
 
 const schema = {
   'pluginAlias': 'homebridge-raspberrypi-gpio',
@@ -34,7 +34,7 @@ const schema = {
             ...lightProperties,
             ...windowCoveringProperties,
             ...boilerProperties,
-            ...outletProperties
+            ...doorProperties
           },
         },
       },

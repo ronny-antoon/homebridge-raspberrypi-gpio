@@ -4,9 +4,7 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
 import {LightBulb} from './accessories/LightBulb';
 import {Blind} from './accessories/Blind';
 import {getAccessories} from './utils/ConfigParser';
-import {Button} from './accessories/Button';
 import {Boiler} from './accessories/Boiler';
-import {Outlet} from './accessories/Outlet';
 import {Door} from './accessories/Door';
 
 /**
