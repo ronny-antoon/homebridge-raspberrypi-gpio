@@ -25,9 +25,9 @@ interface BlindAccessoryType extends AccessoryInterface {
   currentPosition: number;
 }
 
-interface ButtonAccessoryType extends AccessoryInterface{
-  accessory: 'StatelessProgrammableSwitch';
-  buttonPin: number;
+interface DoorAccessoryType extends AccessoryInterface{
+  accessory: 'Door';
+  doorPin: number;
 }
 
 interface BoilerAccessoryType extends AccessoryInterface{
@@ -36,9 +36,5 @@ interface BoilerAccessoryType extends AccessoryInterface{
   boilerButtonPin: number;
 }
 
-interface OutletAccessoryType extends AccessoryInterface{
-  accessory: 'Outlet';
-  outletPin: number;
-}
 
-export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType | BoilerAccessoryType | OutletAccessoryType;
+export type AccessoryType = LightAccessoryType | BlindAccessoryType| DoorAccessoryType | BoilerAccessoryType ;
