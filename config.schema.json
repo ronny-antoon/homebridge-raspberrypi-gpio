@@ -538,11 +538,11 @@
                 }
               ]
             },
-            "outletPin": {
-              "title": "Outlet GPIO",
+            "doorPin": {
+              "title": "Door GPIO",
               "type": "number",
               "condition": {
-                "functionBody": "return model.accessories[arrayIndices].accessory === 'Outlet';"
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'Door';"
               },
               "oneOf": [
                 {
