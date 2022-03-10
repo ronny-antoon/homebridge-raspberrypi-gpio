@@ -97,7 +97,7 @@ export class Boiler {
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration)
       .onSet(this.setDurationTime.bind(this))// SET - bind to the `setOn` method below
       .onGet(this.getDurationTime.bind(this))
-      .setProps({minValue: 1200, maxValue: 5400, minStep: 600, validValueRanges:[1200, 5400]});
+      .setProps({minValue: 600, maxValue: 3600, minStep: 600, validValueRanges:[600, 3600]});
 
     // this.service.getCharacteristic(this.platform.Characteristic.StatusFault)
     //   .onGet(this.getStatusFault.bind(this));
@@ -175,19 +175,19 @@ export class Boiler {
       }, 1000);
     }
     // eslint-disable-next-line no-console
-    console.log('SET valve state :   ', value);
+    //console.log('SET valve state :   ', value);
     return newState;
   }
 
   private getValveState(): CharacteristicValue{
     // eslint-disable-next-line no-console
-    console.log('get valve state : ', this.gpioController.getState(this.boilerPin));
+    //console.log('get valve state : ', this.gpioController.getState(this.boilerPin));
     return this.gpioController.getState(this.boilerPin);
   }
 
   private getValveType(): CharacteristicValue{
     // eslint-disable-next-line no-console
-    console.log('get valve type : ', this.valveType);
+    //console.log('get valve type : ', this.valveType);
     return this.valveType;
   }
 
@@ -207,7 +207,7 @@ export class Boiler {
 
   private getRemainingDuration(): CharacteristicValue{
     // eslint-disable-next-line no-console
-    console.log('get remaining duration time : ', this.remainingDuration);
+    //console.log('get remaining duration time : ', this.remainingDuration);
     return (this.remainingDuration);
   }
 
@@ -219,13 +219,13 @@ export class Boiler {
     this.durationTime = value;
     this.service.getCharacteristic(this.platform.Characteristic.SetDuration).updateValue(this.durationTime);
     // eslint-disable-next-line no-console
-    console.log('SET duration time : ', this.durationTime);
+    //console.log('SET duration time : ', this.durationTime);
     return this.durationTime;
   }
 
   private getDurationTime(): CharacteristicValue{
     // eslint-disable-next-line no-console
-    console.log('get duration time : ', this.durationTime);
+    //console.log('get duration time : ', this.durationTime);
     return this.durationTime;
   }
 
