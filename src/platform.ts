@@ -6,6 +6,9 @@ import {Blind} from './accessories/Blind';
 import {getAccessories} from './utils/ConfigParser';
 import {Boiler} from './accessories/Boiler';
 import {Door} from './accessories/Door';
+import {Button} from './accessories/Button';
+import {Outlet} from './accessories/Outlet';
+import {GpioController} from './controllers/gpioController';
 
 /**
  * HomebridgePlatform
@@ -34,6 +37,9 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
       // run the method to discover / register your devices as accessories
       this.registerDevices(); // Marwan
     });
+
+    // Blink led 5 times then turn of it
+    this.blinkLed();
   }
 
   /**
@@ -92,6 +98,13 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (existingAccessory.context.device.accessory === 'Boiler') {
             new Boiler(this, existingAccessory);
           }
+          if (existingAccessory.context.device.accessory === 'Button') {
+            new Button(this, existingAccessory);
+          }
+          if (existingAccessory.context.device.accessory === 'Outlet') {
+            new Outlet(this, existingAccessory);
+          }
+
           // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
           // remove platform accessories when no longer present
           // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
@@ -121,11 +134,34 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (device.accessory === 'Boiler') {
             new Boiler(this, accessory);
           }
+          if (device.accessory === 'Button') {
+            new Button(this, accessory);
+          }
+          if (device.accessory === 'Outlet') {
+            new Outlet(this, accessory);
+          }
 
           // link the accessory to your platform
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+
         }
       }
     }
+  }
+
+  blinkLed(){
+    //Configure raspberry pi controller
+    const gpioController = GpioController.Instance(console);
+    gpioController.exportGPIO(2, 'out');
+    let count = 0;
+    gpioController.setState(2, 0);
+    const ti = setInterval(()=>{
+      gpioController.setState(2, (gpioController.getState(2) === 0 ? 1 : 0));
+      if(count === 6){
+        gpioController.setState(2, 0);
+        clearInterval(ti);
+      }
+      count++;
+    }, 1000);
   }
 }

@@ -21,21 +21,31 @@ export class GpioController {
     if (!(Gpio.accessible)) {
       throw new Error('gpioController error: Gpio not accessible');
     }
-    const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
-    if(!newGPIo){
-      throw Error('didnt init new gpio correctly');
+
+    let isExist = false;
+    for (const value of this.gpioInUse) {
+      if(value.id === _gpio) {
+        isExist = true;
+      }
     }
-    if(_direction === 'out'){
-      newGPIo.writeSync(0);
+
+    if(!isExist) {
+      const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
+      if (!newGPIo) {
+        throw new Error('didnt init new gpio correctly');
+      }
+      if (_direction === 'out') {
+        newGPIo.writeSync(0);
+      }
+      this.gpioInUse.push({gpios: newGPIo, id: _gpio});
     }
-    this.gpioInUse.push({gpios: newGPIo, id: _gpio});
   }
 
-  public async unexportGpio(): Promise<void> {
-    for (const gpio of this.gpioInUse) {
-      gpio.gpios.unexport();
-    }
-  }
+  // public async unexportGpio(): Promise<void> {
+  //   for (const gpio of this.gpioInUse) {
+  //     gpio.gpios.unexport();
+  //   }
+  // }
 
   public getState(pinNumber: number): BinaryValue {
 

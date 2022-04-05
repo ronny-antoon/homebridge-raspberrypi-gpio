@@ -51,6 +51,18 @@
                   "enum": [
                     "Door"
                   ]
+                },
+                {
+                  "title": "Button",
+                  "enum": [
+                    "Button"
+                  ]
+                },
+                {
+                  "title": "Outlet",
+                  "enum": [
+                    "Outlet"
+                  ]
                 }
               ]
             },
@@ -543,6 +555,120 @@
               "type": "number",
               "condition": {
                 "functionBody": "return model.accessories[arrayIndices].accessory === 'Door';"
+              },
+              "oneOf": [
+                {
+                  "title": "OUTPUT 1",
+                  "enum": [
+                    "13"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 2",
+                  "enum": [
+                    "6"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 3",
+                  "enum": [
+                    "5"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 4",
+                  "enum": [
+                    "22"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 5",
+                  "enum": [
+                    "27"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 6",
+                  "enum": [
+                    "17"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 7",
+                  "enum": [
+                    "4"
+                  ]
+                },
+                {
+                  "title": "OUTPUT 8",
+                  "enum": [
+                    "3"
+                  ]
+                }
+              ]
+            },
+            "buttonPin": {
+              "title": "Button GPIO",
+              "type": "number",
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'Button';"
+              },
+              "oneOf": [
+                {
+                  "title": "INPUT 1",
+                  "enum": [
+                    "19"
+                  ]
+                },
+                {
+                  "title": "INPUT 2",
+                  "enum": [
+                    "26"
+                  ]
+                },
+                {
+                  "title": "INPUT 3",
+                  "enum": [
+                    "21"
+                  ]
+                },
+                {
+                  "title": "INPUT 4",
+                  "enum": [
+                    "20"
+                  ]
+                },
+                {
+                  "title": "INPUT 5",
+                  "enum": [
+                    "16"
+                  ]
+                },
+                {
+                  "title": "INPUT 6",
+                  "enum": [
+                    "12"
+                  ]
+                },
+                {
+                  "title": "INPUT 7",
+                  "enum": [
+                    "24"
+                  ]
+                },
+                {
+                  "title": "INPUT 8",
+                  "enum": [
+                    "23"
+                  ]
+                }
+              ]
+            },
+            "outletPin": {
+              "title": "outlet GPIO",
+              "type": "number",
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].accessory === 'Outlet';"
               },
               "oneOf": [
                 {

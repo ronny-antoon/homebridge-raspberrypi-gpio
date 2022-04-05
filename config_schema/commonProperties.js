@@ -31,6 +31,18 @@ module.exports = { // add accessories type
         "enum": [
           "Door"
         ]
+      },
+      {
+        "title": "Button",
+        "enum": [
+          "Button"
+        ]
+      },
+      {
+        "title": "Outlet",
+        "enum": [
+          "Outlet"
+        ]
       }
     ]
   },
