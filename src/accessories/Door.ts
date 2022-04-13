@@ -31,7 +31,7 @@ export class Door extends CommonAccessory{
     this.gpioController.exportGPIO(this.doorPin, 'out');
 
     // Close door efault
-    this.setLockTargetState(0);
+    this.setLockTargetState(this.platform.Characteristic.LockTargetState.SECURED);
 
   }
 
@@ -71,7 +71,7 @@ export class Door extends CommonAccessory{
   setLockTargetState(value: CharacteristicValue) : CharacteristicValue | void {
     // eslint-disable-next-line no-console
     //console.log('setLockTargetState---------------------------------');
-    if (!value) {
+    if (value === this.platform.Characteristic.LockTargetState.UNSECURED) {
       this.gpioController.setState(this.doorPin, 1);
       this.service.getCharacteristic(this.platform.Characteristic.LockCurrentState).updateValue(this.getLockCurrentState());
       this.service.getCharacteristic(this.platform.Characteristic.LockTargetState).updateValue(this.getLockTargetState());

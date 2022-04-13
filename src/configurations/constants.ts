@@ -10,7 +10,7 @@ export const DEFAULT_TARGET_PERCENTAGE_BLIND = 0;
 // default time to stop boiler
 export const DEFAULT_TIME_TO_STOP_BOILER = 1200; // in seconds
 // default time to open Door
-export const DEFAULT_TIME_TO_OPEN_DOOR = 10; // in seconds
+export const DEFAULT_TIME_TO_OPEN_DOOR = 5; // in seconds
 // default time to update devices with homekit
 // export const DEFAULT_TIME_UPDATE_HOMEKIT = 20; // in minutes
 

@@ -24,21 +24,26 @@ export class Button extends CommonAccessory{
       .onGet(this.handleProgrammableSwitchEventGet.bind(this));
 
     // Configure raspberry pi Controller
-    this.gpioController.exportGPIO(this.buttonPin, 'in');
+    this.gpioController.exportGPIO(this.buttonPin, 'in', 'both');
 
     // Watch for real button
-    this.gpioController.startWatch(this.buttonPin, (err) =>{
+    this.gpioController.startWatch(this.buttonPin, (err, value) =>{
+      this.platform.log.info('button pressed :- ' + value);
       if (err) {
         throw err;
       }
-      if (!this.timoutLongPress){
-        this.timoutLongPress = setTimeout(()=>{
-          this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent).
-            updateValue(this.platform.Characteristic.ProgrammableSwitchEvent.LONG_PRESS);
-          clearTimeout(this.timoutLongPress);
-        }, 2000);
-      }else {
+      if (value === 0 || this.timoutLongPress !== 0) {
+        this.platform.log.info('clear');
         clearTimeout(this.timoutLongPress);
+        this.timoutLongPress = 0;
+      } else {
+        this.platform.log.info('set');
+        this.timoutLongPress = setTimeout(() => {
+          this.platform.log.info('dooo then clear');
+          this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent).updateValue(
+            this.platform.Characteristic.ProgrammableSwitchEvent.LONG_PRESS);
+          this.timoutLongPress = 0;
+        }, 2000);
       }
     });
   }
