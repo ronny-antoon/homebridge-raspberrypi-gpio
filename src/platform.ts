@@ -104,7 +104,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (existingAccessory.context.device.accessory === 'Outlet') {
             new Outlet(this, existingAccessory);
           }
-
+          // TODO: https://stackoverflow.com/questions/15338610/dynamically-loading-a-typescript-class-reflection-for-typescript
           // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
           // remove platform accessories when no longer present
           // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
@@ -157,7 +157,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     gpioController.setState(2, 0);
     const ti = setInterval(()=>{
       gpioController.setState(2, (gpioController.getState(2) === 0 ? 1 : 0));
-      if(count === 6){
+      if(count === 10){
         gpioController.setState(2, 0);
         clearInterval(ti);
       }
