@@ -1,10 +1,10 @@
 import {PlatformAccessory, CharacteristicValue} from 'homebridge';
 
-import { GenericRPIControllerPlatform } from '../platform';
+import {GenericRPIControllerPlatform} from '../platform';
 import {BinaryValue} from 'onoff';
 import {CommonAccessory} from './commonAccessory';
 
-export class LightBulb extends CommonAccessory{
+export class LightBulb extends CommonAccessory {
 
   // GPIO Pins raspberry pi
   private readonly lightButtonPin: number;
@@ -33,14 +33,16 @@ export class LightBulb extends CommonAccessory{
     this.gpioController.exportGPIO(this.lightPin, 'out');
 
     // Watch button press
-    this.gpioController.startWatch(this.lightButtonPin, (err) => {
+    this.gpioController.startWatch(this.lightButtonPin, (err, value) => {
       if (err) {
         throw err;
       }
-      const currentStatus = this.getOnState();
-      const newStatus = currentStatus === 0 ? 1 : 0;
-      this.turnLight(newStatus);
-      this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
+      if (value === 1) {
+        const currentStatus = this.getOnState();
+        const newStatus = currentStatus === 0 ? 1 : 0;
+        this.turnLight(newStatus);
+        this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
+      }
     });
     this.turnLight(this.getOn());
 
@@ -77,11 +79,11 @@ export class LightBulb extends CommonAccessory{
     return this.getOn();
   }
 
-  private setOn(value: CharacteristicValue): CharacteristicValue | void{
+  private setOn(value: CharacteristicValue): CharacteristicValue | void {
     return this.accessory.context.device.onState = value;
   }
 
-  private getOn(): CharacteristicValue{
+  private getOn(): CharacteristicValue {
     return this.accessory.context.device.onState;
   }
 }
