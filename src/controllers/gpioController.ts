@@ -9,6 +9,7 @@ export class GpioController {
   private static _instance: GpioController;
   private readonly gpioInUse: { gpios: Gpio, id: number }[] = [];
   private logger: Logger;
+
   constructor(log: Logger) {
     this.logger = log;
   }
@@ -24,12 +25,18 @@ export class GpioController {
 
     let isExist = false;
     for (const value of this.gpioInUse) {
-      if(value.id === _gpio) {
+      if (value.id === _gpio) {
         isExist = true;
+        value.gpios.unexport();
+        const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
+        if (!newGPIo) {
+          throw new Error('didnt init new gpio correctly');
+        }
+        value.gpios = newGPIo;
       }
     }
 
-    if(!isExist) {
+    if (!isExist) {
       const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
       if (!newGPIo) {
         throw new Error('didnt init new gpio correctly');
@@ -60,7 +67,7 @@ export class GpioController {
     const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
       result.gpios.writeSync(powerState);
-    }else {
+    } else {
       throw new Error('didnt find this pin gpio:' + pinNumber);
     }
   }
