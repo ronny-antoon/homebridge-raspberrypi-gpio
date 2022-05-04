@@ -27,12 +27,11 @@ export class GpioController {
     for (const value of this.gpioInUse) {
       if (value.id === _gpio) {
         isExist = true;
-        value.gpios.unexport();
-        const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
-        if (!newGPIo) {
-          throw new Error('didnt init new gpio correctly');
+        if(_direction === value.gpios.direction()){
+          value.gpios.setEdge(_edge);
+        }else {
+          throw new Error('gpioController error: Gpio existing and in opposite direction');
         }
-        value.gpios = newGPIo;
       }
     }
 
