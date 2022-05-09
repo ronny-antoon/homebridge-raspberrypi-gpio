@@ -7,6 +7,7 @@ on:
 
 jobs:
   publish-prod:
+    name: "Publish Prod to NPM"
     runs-on: ubuntu-latest
 
     steps:
@@ -15,6 +16,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
+      - name: Git Identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit version UP
         run: |
           npm version minor
