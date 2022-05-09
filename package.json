@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "homebridge-raspberrypi-gpio",
   "name": "homebridge-raspberrypi-gpio",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Control smart home accessories by raspberry pi GPIO.",
   "license": "Apache-2.0",
   "repository": {
