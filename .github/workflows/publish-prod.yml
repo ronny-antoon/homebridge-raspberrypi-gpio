@@ -59,7 +59,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Set Current Version
         id: set_current_version
-        if: startsWith(github.event.pull_request.title, 'v')
         shell: bash -ex {0}
         run: |
           CURRENT_VERSION=$(node -p 'require("./package.json").version')
@@ -71,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ steps.set_current_version.outputs.CURRENT_VERSION }}
-          release_name: "Release new version"
+          release_name: v${{ steps.set_current_version.outputs.CURRENT_VERSION }}
           body: "Release version to production NPM"
           draft: false
           prerelease: false
