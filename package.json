@@ -22,9 +22,7 @@
     "prepare-watch": "npm run build && npm link",
     "watch": "nodemon",
     "build": "node config_schema/index.js && tsc",
-    "start": "node config_schema/index.js && tsc -w",
-    "prepublishOnly": "npm run lint && npm run build",
-    "publishBeta": "npm publish --tag Beta"
+    "start": "node config_schema/index.js && tsc -w"
   },
   "keywords": [
     "homebridge-plugin",

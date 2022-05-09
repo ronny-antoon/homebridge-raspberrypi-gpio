@@ -1,11 +1,13 @@
-name: Build and Lint
+name: Publish BETA version
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - "master"
 
 jobs:
-  build:
+  publish-beta:
     runs-on: ubuntu-latest
-
 
     steps:
       - uses: actions/checkout@v2
