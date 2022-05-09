@@ -2,7 +2,7 @@
   "private": false,
   "displayName": "homebridge-raspberrypi-gpio",
   "name": "homebridge-raspberrypi-gpio",
-  "version": "1.5.0",
+  "version": "1.5.4",
   "description": "Control smart home accessories by raspberry pi GPIO.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,9 @@
     "prepare-watch": "npm run build && npm link",
     "watch": "nodemon",
     "build": "node config_schema/index.js && tsc",
-    "start": "node config_schema/index.js && tsc -w"
+    "start": "node config_schema/index.js && tsc -w",
+    "prepublishOnly": "npm run lint && npm run build",
+    "publishBeta": "npm version --no-git-tag-version patch && npm publish --tag Beta"
   },
   "keywords": [
     "homebridge-plugin",
