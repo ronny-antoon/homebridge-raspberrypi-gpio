@@ -9,7 +9,7 @@ interface AccessoryInterface {
 interface LightAccessoryType extends AccessoryInterface {
   accessory: 'LightBulb';
   lightPin: number;
-  buttonPin: number;
+  lightButtonPin: number;
   onState: 0 | 1;
 }
 
@@ -25,8 +25,27 @@ interface BlindAccessoryType extends AccessoryInterface {
   currentPosition: number;
 }
 
+interface DoorAccessoryType extends AccessoryInterface{
+  accessory: 'Door';
+  doorPin: number;
+}
+
+interface BoilerAccessoryType extends AccessoryInterface{
+  accessory: 'Boiler';
+  boilerPin: number;
+  boilerButtonPin: number;
+}
+
 interface ButtonAccessoryType extends AccessoryInterface{
-  accessory: 'StatelessProgrammableSwitch';
+  accessory: 'Button';
   buttonPin: number;
 }
-export type AccessoryType = LightAccessoryType | BlindAccessoryType| ButtonAccessoryType;
+
+interface OutletAccessoryType extends AccessoryInterface{
+  accessory: 'Outlet';
+  OutletPin: number;
+}
+
+
+export type AccessoryType = LightAccessoryType | BlindAccessoryType| DoorAccessoryType | BoilerAccessoryType | ButtonAccessoryType
+  | OutletAccessoryType;

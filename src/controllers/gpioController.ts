@@ -9,6 +9,7 @@ export class GpioController {
   private static _instance: GpioController;
   private readonly gpioInUse: { gpios: Gpio, id: number }[] = [];
   private logger: Logger;
+
   constructor(log: Logger) {
     this.logger = log;
   }
@@ -21,21 +22,36 @@ export class GpioController {
     if (!(Gpio.accessible)) {
       throw new Error('gpioController error: Gpio not accessible');
     }
-    const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
-    if(!newGPIo){
-      throw Error('didnt init new gpio correctly');
+
+    let isExist = false;
+    for (const value of this.gpioInUse) {
+      if (value.id === _gpio) {
+        isExist = true;
+        if(_direction === value.gpios.direction()){
+          value.gpios.setEdge(_edge);
+        }else {
+          throw new Error('gpioController error: Gpio existing and in opposite direction');
+        }
+      }
     }
-    if(_direction === 'out'){
-      newGPIo.writeSync(0);
+
+    if (!isExist) {
+      const newGPIo = new Gpio(_gpio, _direction, _edge, {debounceTimeout: _debounceTimeout});
+      if (!newGPIo) {
+        throw new Error('didnt init new gpio correctly');
+      }
+      if (_direction === 'out') {
+        newGPIo.writeSync(0);
+      }
+      this.gpioInUse.push({gpios: newGPIo, id: _gpio});
     }
-    this.gpioInUse.push({gpios: newGPIo, id: _gpio});
   }
 
-  public async unexportGpio(): Promise<void> {
-    for (const gpio of this.gpioInUse) {
-      gpio.gpios.unexport();
-    }
-  }
+  // public async unexportGpio(): Promise<void> {
+  //   for (const gpio of this.gpioInUse) {
+  //     gpio.gpios.unexport();
+  //   }
+  // }
 
   public getState(pinNumber: number): BinaryValue {
 
@@ -50,7 +66,7 @@ export class GpioController {
     const result = this.gpioInUse.find(gpioPin => gpioPin.id === pinNumber);
     if (result) {
       result.gpios.writeSync(powerState);
-    }else {
+    } else {
       throw new Error('didnt find this pin gpio:' + pinNumber);
     }
   }

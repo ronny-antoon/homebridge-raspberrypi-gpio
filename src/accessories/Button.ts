@@ -1,80 +1,62 @@
-import {CharacteristicValue, PlatformAccessory, Service} from 'homebridge';
-import {GpioController} from '../controllers/gpioController';
+import {CommonAccessory} from './commonAccessory';
 import {GenericRPIControllerPlatform} from '../platform';
+import {CharacteristicValue, PlatformAccessory} from 'homebridge';
 
-export class Button {
-  // responsible for communicating with home bridge.
-  private service: Service;
-  // responsible for communicating with Raspberry Pi GPIO
-  private gpioController: GpioController;
+export class Button extends CommonAccessory {
   // GPIO Pins raspberry pi
   private readonly buttonPin: number;
 
-  private intervalSinglePress?: ReturnType<typeof setInterval>;
-  private counterSinglePress = 0;
-  private intervalDoublePress?: ReturnType<typeof setInterval>;
-  private counterDoublePress = 0;
-  private timeOutLongPress?: ReturnType<typeof setInterval>;
-  private counterLongPress = 0;
+  // parameters
+  private timoutLongPress;
 
   constructor(
-    private readonly platform: GenericRPIControllerPlatform,
-    private readonly accessory: PlatformAccessory,
+    platform: GenericRPIControllerPlatform,
+    accessory: PlatformAccessory,
   ) {
     // set accessory information
-    this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.manufacturer ||
-        'Default-Manufacturer-Ronny')
-      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.model || 'Default-Model-Ronny')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.serialNumber || 'Default-Serial-Ronny')
-      .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
+    super(platform, accessory, platform.Service.StatelessProgrammableSwitch);
 
-    // Configure Button Controller
-    this.buttonPin = accessory.context.device.buttonPin;
+    // Configure pins Controller
+    this.buttonPin = this.accessory.context.device.buttonPin;
 
-    // get the Button service if it exists, otherwise create a new Button service
-    // you can create multiple services for each accessory
-    this.service = this.accessory.getService(this.platform.Service.StatelessProgrammableSwitch) ||
-      this.accessory.addService(this.platform.Service.StatelessProgrammableSwitch);
-    // each service must implement at-minimum the "required characteristics" for the given service type
-    // see https://developers.homebridge.io/#/service/StatelessProgrammableSwitch
-
-    // register handlers for required characteristics
+    // register handlers
     this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent)
-      .onGet(this.getButtonState.bind(this));               // GET - bind to the `getOn` method below
+      .onGet(this.handleProgrammableSwitchEventGet.bind(this));
 
-    ////////////////////////////////////////////////////////
-    // this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent).onGet(((...args) => this.platform.log.info(args as any)) as any);
-    this.service.getCharacteristic(this.platform.Characteristic.ProgramMode).onSet(((...args) => this.platform.log.info(args as any)) as any);
-    // this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchOutputState).onGet(((...args) => this.platform.log.info(args as any)) as any);
-    /////////////////////////////////////////////////////////
-    //Configure raspberry pi controller
-    this.gpioController = GpioController.Instance(platform.log);
+    // Configure raspberry pi Controller
     this.gpioController.exportGPIO(this.buttonPin, 'in', 'both');
 
-    // Watch button press0
+    // Watch for real button
+    this.timoutLongPress = setTimeout(() => {
+      this.platform.log.info('clear');
+    }, 1000);
+    clearTimeout(this.timoutLongPress);
+    let flagTimer = false;
     this.gpioController.startWatch(this.buttonPin, (err, value) => {
+      this.platform.log.info('button pressed :- ' + value);
       if (err) {
         throw err;
       }
-      if (value === 1) {
-        this.platform.log.info('value is : ' + value);
-        this.timeOutLongPress = setTimeout(() => {
-          this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent).updateValue(
-            this.platform.Characteristic.ProgrammableSwitchEvent.LONG_PRESS);
-          this.platform.log.info('Long Press Emitted');
-        }, 500);
+      if (value === 0) { // || this.timoutLongPress !== 0
+        this.platform.log.info('clear');
+        flagTimer = false;
+        clearTimeout(this.timoutLongPress);
       } else {
-        if (this.timeOutLongPress) {
-          clearTimeout(this.timeOutLongPress);
+        if (!flagTimer) {
+          flagTimer = true;
+          this.platform.log.info('set');
+          this.timoutLongPress = setTimeout(() => {
+            this.platform.log.info('dooo then clear');
+            this.service.getCharacteristic(this.platform.Characteristic.ProgrammableSwitchEvent).updateValue(
+              this.platform.Characteristic.ProgrammableSwitchEvent.LONG_PRESS);
+            flagTimer = false;
+          }, 2000);
         }
       }
-
     });
   }
 
-  getButtonState(): CharacteristicValue {
-    return this.gpioController.getState(this.buttonPin);
+  handleProgrammableSwitchEventGet(): CharacteristicValue {
+    return this.platform.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
   }
-
 }

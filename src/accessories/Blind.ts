@@ -1,5 +1,4 @@
-import {PlatformAccessory, Service} from 'homebridge';
-import {GpioController} from '../controllers/gpioController';
+import {PlatformAccessory} from 'homebridge';
 import {GenericRPIControllerPlatform} from '../platform';
 import {
   DEFAULT_CURRENT_PERCENTAGE_BLIND, DEFAULT_TARGET_PERCENTAGE_BLIND,
@@ -7,12 +6,9 @@ import {
   DEFAULT_TIME_TO_OPEN_BLIND,
   INTERVAL_BLIND,
 } from '../configurations/constants';
+import {CommonAccessory} from './commonAccessory';
 
-export class Blind {
-  // responsible for communicating with home bridge.
-  private service: Service;
-  // responsible for communicating with Raspberry Pi GPIO
-  private gpioController: GpioController;
+export class Blind extends CommonAccessory{
   // GPIO Pins raspberry pi
   private readonly motorUpPin: number;
   private readonly motorDownPin: number;
@@ -26,15 +22,11 @@ export class Blind {
 
   // constructor getting platform and accessory
   constructor(
-    private readonly platform: GenericRPIControllerPlatform,
-    private readonly accessory: PlatformAccessory,
+    platform: GenericRPIControllerPlatform,
+    accessory: PlatformAccessory,
   ) {
     //set accessory information
-    this.accessory.getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.context.device.manufacturer || 'nonono')
-      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.device.model || 'nonono')
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.device.serialNumber || 'nonono')
-      .setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName || 'nonono');
+    super(platform, accessory, platform.Service.WindowCovering);
 
     // Configure Blind Controller
     this.motorUpPin = accessory.context.device.motorUpPin;
@@ -45,13 +37,6 @@ export class Blind {
     this.timeToClose = accessory.context.device.timeToClose || DEFAULT_TIME_TO_CLOSE_BLIND;
     this.targetPercentage = accessory.context.device.currentPosition || DEFAULT_TARGET_PERCENTAGE_BLIND;
     this.setCurrentPercentage(accessory.context.device.currentPosition || DEFAULT_CURRENT_PERCENTAGE_BLIND);
-
-    // get the Blinds( window covering service if it exists, otherwise create a new window Covering service
-    // you can create multiple services for each accessory
-    this.service = this.accessory.getService(
-      this.platform.Service.WindowCovering) || this.accessory.addService(this.platform.Service.WindowCovering);
-    // each service must implement at-minimum the "required characteristics" for the given service type
-    // see https://developers.homebridge.io/#/service/WindowCovering
 
     // register handlers for required characteristics
     this.service.getCharacteristic(this.platform.Characteristic.CurrentPosition)
@@ -65,7 +50,6 @@ export class Blind {
       .onSet(this.handleTargetPositionSet.bind(this));
 
     //Configure raspberry pi controller
-    this.gpioController = GpioController.Instance(platform.log);
     this.gpioController.exportGPIO(this.motorUpPin, 'out');
     this.gpioController.exportGPIO(this.motorDownPin, 'out');
     this.gpioController.exportGPIO(this.buttonUpPin, 'in', 'both');
@@ -202,11 +186,11 @@ export class Blind {
     }, INTERVAL_BLIND);
   }
 
-  private getCurrentPercentage(): number{
+  private getCurrentPercentage(): number {
     return this.accessory.context.device.currentPosition;
   }
 
-  private setCurrentPercentage(value: number): number | void{
-    return this.accessory.context.device.currentPercentage = value;
+  private setCurrentPercentage(value: number): number | void {
+    return this.accessory.context.device.currentPosition = value;
   }
 }

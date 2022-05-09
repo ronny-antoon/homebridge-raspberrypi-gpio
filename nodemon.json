@@ -1,10 +1,10 @@
 {
   "watch": [
-    "src"
+    "dist"
   ],
   "ext": "ts",
   "ignore": [],
-  "exec": "tsc && homebridge -I -D",
+  "exec": "node restart.js",
   "signal": "SIGTERM",
   "env": {
     "NODE_OPTIONS": "--trace-warnings"
