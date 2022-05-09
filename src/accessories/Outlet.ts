@@ -7,7 +7,7 @@ export class Outlet extends CommonAccessory{
   // GPIO Pins raspberry pi
   private readonly outletPin: number;
 
-  constructor(
+  constructor(// ffdjsdewewj
     platform: GenericRPIControllerPlatform,
     accessory: PlatformAccessory,
   ) {
