@@ -157,11 +157,11 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     gpioController.setState(2, 0);
     const ti = setInterval(()=>{
       gpioController.setState(2, (gpioController.getState(2) === 0 ? 1 : 0));
-      if(count === 10){
+      if(count === 20){
         gpioController.setState(2, 0);
         clearInterval(ti);
       }
       count++;
-    }, 1000);
+    }, 500);
   }
 }

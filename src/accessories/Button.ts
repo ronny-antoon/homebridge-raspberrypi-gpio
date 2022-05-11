@@ -59,4 +59,8 @@ export class Button extends CommonAccessory {
   handleProgrammableSwitchEventGet(): CharacteristicValue {
     return this.platform.Characteristic.ProgrammableSwitchEvent.SINGLE_PRESS;
   }
+
+  getValues(): Record<string, number | string | boolean> {
+    return {};
+  }
 }

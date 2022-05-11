@@ -1,5 +1,5 @@
 /* eslint-disable */
-const outputProperties = require("./output")
+const outputProperties = require("../output")
 const onlyOutlet = {
   "condition": {
     "functionBody": "return model.accessories[arrayIndices].accessory === 'Outlet';"

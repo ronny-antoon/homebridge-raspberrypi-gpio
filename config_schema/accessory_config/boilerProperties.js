@@ -1,6 +1,6 @@
 /* eslint-disable */
-const outputProperties = require("./output")
-const inputProperties = require('./input');
+const outputProperties = require("../output")
+const inputProperties = require('../input');
 const onlyBoiler = {
   "condition": {
     "functionBody": "return model.accessories[arrayIndices].accessory === 'Boiler';"

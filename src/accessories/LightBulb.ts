@@ -9,6 +9,8 @@ export class LightBulb extends CommonAccessory {
   // GPIO Pins raspberry pi
   private readonly lightButtonPin: number;
   private readonly lightPin: number;
+  // parameters
+  private onState: boolean;
 
   constructor(
     platform: GenericRPIControllerPlatform,
@@ -17,73 +19,55 @@ export class LightBulb extends CommonAccessory {
     // set accessory information
     super(platform, accessory, platform.Service.Lightbulb);
 
-    // Configure Light Controller
-
+    // Configure properties Accessory
     this.lightButtonPin = this.accessory.context.device.lightButtonPin;
     this.lightPin = this.accessory.context.device.lightPin;
-    this.setOn(this.getOn() || 0);
+    this.onState = this.accessory.context.device.onState || false;
 
-    // register handlers for required characteristics
-    this.service.getCharacteristic(this.platform.Characteristic.On)
-      .onSet(this.turnLight.bind(this))             // SET - bind to the `setOn` method below
-      .onGet(this.getOnState.bind(this));               // GET - bind to the `getOn` method below
-
-    //Configure raspberry pi controller
+    // Configure raspberry pi controller
     this.gpioController.exportGPIO(this.lightButtonPin, 'in');
     this.gpioController.exportGPIO(this.lightPin, 'out');
 
-    // Watch button press
+    // register handlers for required characteristics
+    this.service.getCharacteristic(this.platform.Characteristic.On)
+      .onSet(this.setOnCharacteristic.bind(this))             // SET - bind to the `setOn` method below
+      .onGet(this.getOnCharacteristic.bind(this));               // GET - bind to the `getOn` method below
+
+    // register handler for button
     this.gpioController.startWatch(this.lightButtonPin, (err, value) => {
       if (err) {
         throw err;
       }
       if (value === 1) {
-        const currentStatus = this.getOnState();
-        const newStatus = currentStatus === 0 ? 1 : 0;
-        this.turnLight(newStatus);
-        this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
+        const newStatus = this.onState ? 0 : 1;
+        this.setOnCharacteristic(newStatus);
       }
     });
-    this.turnLight(this.getOn());
 
+    // update device
+    this.setOnCharacteristic(this.getOnCharacteristic());
   }
 
-  turnLight(value: CharacteristicValue) {
-    // code to turn device on/off
-    let newStat: BinaryValue;
-    if (value) {
-      newStat = 1;
-    } else {
-      newStat = 0;
-    }
-    this.setOn(value);
-    this.gpioController.setState(this.lightPin, newStat);
-    this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(this.getOnState());
+  // get Handler for homekit
+  getOnCharacteristic(): CharacteristicValue {
+    return this.onState;
   }
 
-  /**
-   * Handle the "GET" requests from HomeKit
-   * These are sent when HomeKit wants to know the current state of the accessory, for example, checking if a Light bulb is on.
-   *
-   * GET requests should return as fast as possible. A long delay here will result in
-   * HomeKit being unresponsive and a bad user experience in general.
-   *
-   * If your device takes time to respond you should update the status of your device
-   * asynchronously instead using the `updateCharacteristic` method instead.
+  // set Handler for homekit
+  setOnCharacteristic(value: CharacteristicValue): CharacteristicValue | void {
+    // fastest respond;
+    this.service.getCharacteristic(this.platform.Characteristic.On).updateValue(value);
+    // change local value
+    this.onState = value === true;
+    // switch bulb
+    this.gpioController.setState(this.lightPin, this.onState ? 1 : 0);
 
-   * @example
-   * this.service.updateCharacteristic(this.platform.Characteristic.On, true)
-   */
-  getOnState(): CharacteristicValue {
-    this.setOn(this.gpioController.getState(this.lightPin));
-    return this.getOn();
+    this.updateCacheDevice();
   }
 
-  private setOn(value: CharacteristicValue): CharacteristicValue | void {
-    return this.accessory.context.device.onState = value;
-  }
-
-  private getOn(): CharacteristicValue {
-    return this.accessory.context.device.onState;
+  getValues(): Record<string, number | string | boolean> {
+    return {
+      'onState': this.onState,
+    };
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable */
-const inputProperties = require("./input")
-const outputProperties = require("./output")
+const inputProperties = require("../input")
+const outputProperties = require("../output")
 const onlyWindowCovering = {
   "condition": {
     "functionBody": "return model.accessories[arrayIndices].accessory === 'WindowCovering';"

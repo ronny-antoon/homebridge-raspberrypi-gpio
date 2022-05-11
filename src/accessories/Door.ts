@@ -1,10 +1,10 @@
-import { PlatformAccessory, CharacteristicValue} from 'homebridge';
+import {PlatformAccessory, CharacteristicValue} from 'homebridge';
 
-import { GenericRPIControllerPlatform } from '../platform';
+import {GenericRPIControllerPlatform} from '../platform';
 import {DEFAULT_TIME_TO_OPEN_DOOR} from '../configurations/constants';
 import {CommonAccessory} from './commonAccessory';
 
-export class Door extends CommonAccessory{
+export class Door extends CommonAccessory {
   // GPIO Pins raspberry pi
   private readonly doorPin: number;
 
@@ -68,7 +68,7 @@ export class Door extends CommonAccessory{
     );
   }
 
-  setLockTargetState(value: CharacteristicValue) : CharacteristicValue | void {
+  setLockTargetState(value: CharacteristicValue): CharacteristicValue | void {
     // eslint-disable-next-line no-console
     //console.log('setLockTargetState---------------------------------');
     if (value === this.platform.Characteristic.LockTargetState.UNSECURED) {
@@ -81,7 +81,7 @@ export class Door extends CommonAccessory{
         this.service.getCharacteristic(this.platform.Characteristic.LockTargetState).updateValue(this.getLockTargetState());
       }, (DEFAULT_TIME_TO_OPEN_DOOR * 1000));
     } else {
-      if(this.timeOutMoving){
+      if (this.timeOutMoving) {
         clearTimeout(this.timeOutMoving);
       }
       this.gpioController.setState(this.doorPin, 0);
@@ -91,4 +91,7 @@ export class Door extends CommonAccessory{
     return this.getLockCurrentState();
   }
 
+  getValues(): Record<string, number | string | boolean> {
+    return {};
+  }
 }

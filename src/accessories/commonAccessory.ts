@@ -2,7 +2,7 @@ import {PlatformAccessory, Service, WithUUID} from 'homebridge';
 import {GpioController} from '../controllers/gpioController';
 import {GenericRPIControllerPlatform} from '../platform';
 
-export class CommonAccessory {
+export abstract class CommonAccessory {
 
   // responsible for communicating with home bridge.
   protected service: Service;
@@ -28,7 +28,12 @@ export class CommonAccessory {
     this.gpioController = GpioController.Instance(this.platform.log);
   }
 
-  // TODO: updateCacheDevice()
+  abstract getValues(): Record<string, number | string | boolean>;
+
+  updateCacheDevice(): void {
+    Object.assign(this.accessory.context.device, this.getValues());
+  }
+
   // TODO: restoreCacheDevice()
   // TODO: oneSingletonFuncRefresh()
 

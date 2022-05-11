@@ -1,5 +1,5 @@
 /* eslint-disable */
-const inputProperties = require("./input")
+const inputProperties = require("../input")
 const onlyButton = {
   "condition": {
     "functionBody": "return model.accessories[arrayIndices].accessory === 'Button';"
