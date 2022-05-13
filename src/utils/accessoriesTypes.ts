@@ -1,9 +1,9 @@
 interface AccessoryInterface {
-  displayName : string;
-  accessory : string;
-  manufacturer : string;
-  model : string;
-  serialNumber : string;
+  displayName: string;
+  accessory: string;
+  manufacturer: string;
+  model: string;
+  serialNumber: string;
 }
 
 interface LightAccessoryType extends AccessoryInterface {
@@ -25,27 +25,30 @@ interface BlindAccessoryType extends AccessoryInterface {
   currentPosition: number;
 }
 
-interface DoorAccessoryType extends AccessoryInterface{
+interface DoorAccessoryType extends AccessoryInterface {
   accessory: 'Door';
   doorPin: number;
 }
 
-interface BoilerAccessoryType extends AccessoryInterface{
+interface BoilerAccessoryType extends AccessoryInterface {
   accessory: 'Boiler';
   boilerPin: number;
   boilerButtonPin: number;
 }
 
-interface ButtonAccessoryType extends AccessoryInterface{
+interface ButtonAccessoryType extends AccessoryInterface {
   accessory: 'Button';
   buttonPin: number;
 }
 
-interface OutletAccessoryType extends AccessoryInterface{
+interface OutletAccessoryType extends AccessoryInterface {
   accessory: 'Outlet';
   OutletPin: number;
 }
 
+interface SecuritySystemAccessoryType extends AccessoryInterface {
+  accessory: 'SecuritySystem';
+}
 
-export type AccessoryType = LightAccessoryType | BlindAccessoryType| DoorAccessoryType | BoilerAccessoryType | ButtonAccessoryType
-  | OutletAccessoryType;
+export type AccessoryType = LightAccessoryType | BlindAccessoryType | DoorAccessoryType | BoilerAccessoryType | ButtonAccessoryType
+  | OutletAccessoryType | SecuritySystemAccessoryType;

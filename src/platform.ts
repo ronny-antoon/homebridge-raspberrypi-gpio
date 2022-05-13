@@ -1,6 +1,6 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
+import {API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic} from 'homebridge';
 
-import { PLATFORM_NAME, PLUGIN_NAME } from './configurations/settings';
+import {PLATFORM_NAME, PLUGIN_NAME} from './configurations/settings';
 import {LightBulb} from './accessories/LightBulb';
 import {Blind} from './accessories/Blind';
 import {getAccessories} from './utils/ConfigParser';
@@ -9,6 +9,7 @@ import {Door} from './accessories/Door';
 import {Button} from './accessories/Button';
 import {Outlet} from './accessories/Outlet';
 import {GpioController} from './controllers/gpioController';
+import {SecuritySystem} from './accessories/SecuritySystem';
 
 /**
  * HomebridgePlatform
@@ -63,7 +64,7 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     // EXAMPLE ONLY
     // A real plugin you would register accessories from a user-defined array in the platform config_schema.
     const configuredDevicesFromFile = getAccessories(this.config);
-    if(configuredDevicesFromFile) {
+    if (configuredDevicesFromFile) {
       // loop over the discovered devices and register each one if it has not already been registered
       for (const device of configuredDevicesFromFile) {
 
@@ -104,6 +105,9 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (existingAccessory.context.device.accessory === 'Outlet') {
             new Outlet(this, existingAccessory);
           }
+          if (existingAccessory.context.device.accessory === 'SecuritySystem') {
+            new SecuritySystem(this, existingAccessory);
+          }
           // TODO: https://stackoverflow.com/questions/15338610/dynamically-loading-a-typescript-class-reflection-for-typescript
           // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
           // remove platform accessories when no longer present
@@ -140,6 +144,9 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
           if (device.accessory === 'Outlet') {
             new Outlet(this, accessory);
           }
+          if (device.accessory === 'SecuritySystem') {
+            new SecuritySystem(this, accessory);
+          }
 
           // link the accessory to your platform
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
@@ -149,15 +156,15 @@ export class GenericRPIControllerPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  blinkLed(){
+  blinkLed() {
     //Configure raspberry pi controller
     const gpioController = GpioController.Instance(console);
     gpioController.exportGPIO(2, 'out');
     let count = 0;
     gpioController.setState(2, 0);
-    const ti = setInterval(()=>{
+    const ti = setInterval(() => {
       gpioController.setState(2, (gpioController.getState(2) === 0 ? 1 : 0));
-      if(count === 20){
+      if (count === 20) {
         gpioController.setState(2, 0);
         clearInterval(ti);
       }

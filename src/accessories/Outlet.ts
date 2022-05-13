@@ -1,12 +1,11 @@
 import {CommonAccessory} from './commonAccessory';
 import {GenericRPIControllerPlatform} from '../platform';
 import {CharacteristicValue, PlatformAccessory} from 'homebridge';
-import {BinaryValue} from 'onoff';
 
 export class Outlet extends CommonAccessory {
   // GPIO Pins raspberry pi
   private readonly outletPin: number;
-// parameters
+  // parameters
   private onState: boolean;
 
   constructor(

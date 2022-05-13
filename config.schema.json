@@ -63,6 +63,12 @@
                   "enum": [
                     "Outlet"
                   ]
+                },
+                {
+                  "title": "SecuritySystem",
+                  "enum": [
+                    "SecuritySystem"
+                  ]
                 }
               ]
             },

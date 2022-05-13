@@ -8,6 +8,7 @@ const boilerProperties = require('./accessory_config/boilerProperties')
 const doorProperties = require('./accessory_config/doorProperties')
 const buttonProperties = require('./accessory_config/buttonProperties')
 const outletProperties = require('./accessory_config/outletProperties')
+const securitySystemProperties = require('./accessory_config/securitySystemProperties')
 
 const schema = {
   'pluginAlias': 'homebridge-raspberrypi-gpio',
@@ -38,7 +39,8 @@ const schema = {
             ...boilerProperties,
             ...doorProperties,
             ...buttonProperties,
-            ...outletProperties
+            ...outletProperties,
+            ...securitySystemProperties,
           },
         },
       },
